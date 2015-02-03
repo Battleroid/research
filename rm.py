@@ -7,10 +7,26 @@ class RM:
         self.ki, self.kj, self.m = self._create_ki_kj(self.a)
 
     def _create_matrix(self):
+        """Creates random matrix with values (0, 1) based on size.
+
+        :return:
+        """
         return np.random.randint(0, 2, (self.size, self.size))
 
-    def _create_symm_matrix(self, matrix):
+    @staticmethod
+    def _create_symm_matrix(matrix):
+        """Creates symmetrical matrix based on bottom left half of matrix.
+
+        :param matrix:
+        :return:
+        """
         return np.tril(matrix, -1) + np.tril(matrix, -1).T
 
-    def _create_ki_kj(self, matrix):
+    @staticmethod
+    def _create_ki_kj(matrix):
+        """Returns array of sum across y axis (ki) and x axis (kj) and returning the sum of ki (m).
+
+        :param matrix:
+        :return:
+        """
         return np.sum(matrix, 1), np.sum(matrix, 0), np.sum(np.sum(matrix, 1))
