@@ -50,7 +50,7 @@ class RM:
         """
         Divides the values of p1 by m, returns results in two-dimensional array.
 
-        :return:
+        :return matrix:
         """
         a = np.zeros((self.size, self.size), dtype=np.float64)
         for i, row in enumerate(a):
