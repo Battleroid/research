@@ -4,12 +4,15 @@ class RM:
     def __init__(self, size=10):
         self.size = size
         self.a = self._create_symm_matrix(self._create_matrix())
-        self.ki, self.kj, self.m = self._create_ki_kj(self.a)
+        self.ki, self.kj, self.m = self._create_ki_kj_m(self.a)
+        self.p1 = self._create_p1()
+        self.p = self._create_p()
+        self.b = self.a - self.p
 
     def _create_matrix(self):
         """Creates random matrix with values (0, 1) based on size.
 
-        :return:
+        :return matrix:
         """
         return np.random.randint(0, 2, (self.size, self.size))
 
@@ -18,15 +21,42 @@ class RM:
         """Creates symmetrical matrix based on bottom left half of matrix.
 
         :param matrix:
-        :return:
+        :return matrix:
         """
         return np.tril(matrix, -1) + np.tril(matrix, -1).T
 
     @staticmethod
-    def _create_ki_kj(matrix):
+    def _create_ki_kj_m(matrix):
         """Returns array of sum across y axis (ki) and x axis (kj) and returning the sum of ki (m).
 
         :param matrix:
-        :return:
+        :return ki, kj, m:
         """
         return np.sum(matrix, 1), np.sum(matrix, 0), np.sum(np.sum(matrix, 1))
+
+    def _create_p1(self):
+        """
+        Creates p1, which is an intermediate step in creating p. Takes each value from ki, kj and multiples to create two-dimensional array.
+
+        :return matrix:
+        """
+        a = np.zeros((self.size, self.size), dtype=np.int)
+        for i, row in enumerate(a):
+            for j, col in enumerate(row):
+                a[i][j] = self.ki[i] * self.kj[j]
+        return a
+
+    def _create_p(self):
+        """
+        Divides the values of p1 by m, returns results in two-dimensional array.
+
+        :return:
+        """
+        a = np.zeros((self.size, self.size), dtype=np.float64)
+        for i, row in enumerate(a):
+            for j, col in enumerate(row):
+                try:
+                    a[i][j] = float(self.p1[i][j]) / self.m
+                except ZeroDivisionError:
+                    pass
+        return a
