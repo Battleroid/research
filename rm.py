@@ -15,6 +15,7 @@ class RM:
         self.p = self._create_p()
         self.b = self.a - self.p
         self.eval, self.evec = linalg.eig(self.b)
+	# note: linalg.eigh might be the correct solution for symmetric matrices
         self.max_eig_val = self._get_largest_eig_val(self.eval)
         self.max_eig_val_vec = self.evec[self.max_eig_val]
 
