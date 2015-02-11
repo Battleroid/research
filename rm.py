@@ -59,15 +59,6 @@ class RM:
                 g2[i][j] = g2_arrays[i][g2_order[j]]  # possible
         return g1, g2
 
-# for row in range(g1_size):
-#     for index, cell in enumerate(g1_order):
-#         g1[row][index] = g1_arrays[index][cell]
-#         print row, index, 'of g1 is now', g1_arrays[index][cell]
-# for row in range(g2_size):
-#     for index, cell in enumerate(g2_order):
-#         g2[row][index] = g2_arrays[index][cell]
-# return g1, g2
-
     @staticmethod
     def _create_symm_matrix(matrix):
         """Creates symmetrical matrix based on bottom left half of matrix.
