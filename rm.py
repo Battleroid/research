@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.linalg import linalg
+import os
 
 
 class RM:
@@ -14,10 +15,11 @@ class RM:
         self.p1 = self._create_p1()
         self.p = self._create_p()
         self.b = self.a - self.p
-        self.eval, self.evec = linalg.eig(self.b)
-	# note: linalg.eigh might be the correct solution for symmetric matrices
+        self.eval, self.evec = linalg.eigh(self.b)  # eig or eigh for symmetric?
         self.max_eig_val = self._get_largest_eig_val(self.eval)
         self.max_eig_val_vec = self.evec[self.max_eig_val]
+        self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays = self._create_g_groups(self.a, self.evec)
+        self.g1, self.g2 = self._create_g_matrices(self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays)
 
     def _create_matrix(self):
         """Creates random matrix with values (0, 1) based on size.
@@ -25,6 +27,46 @@ class RM:
         :return matrix:
         """
         return np.random.randint(0, 2, (self.size, self.size))
+
+    @staticmethod
+    def _create_g_groups(matrix, evec):
+        g1_order = []
+        g1_arrays = []
+        g2_order = []
+        g2_arrays = []
+        for order, row in enumerate(matrix):
+            if evec[order][0] >= 0:
+                # positive
+                g1_order.append(order)
+                g1_arrays.append(row)
+            else:
+                # negative
+                g2_order.append(order)
+                g2_arrays.append(row)
+        return g1_order, g1_arrays, g2_order, g2_arrays
+
+    @staticmethod
+    def _create_g_matrices(g1_order, g1_arrays, g2_order, g2_arrays):
+        g1_size = len(g1_order)
+        g2_size = len(g2_order)
+        g1 = np.zeros((g1_size, g1_size), dtype=int)
+        g2 = np.zeros((g2_size, g2_size), dtype=int)
+        for i, row in enumerate(g1):
+            for j, col in enumerate(g1_order):
+                g1[i][j] = g1_arrays[i][g1_order[j]]  # possible
+        for i, row in enumerate(g2):
+            for j, col in enumerate(g2_order):
+                g2[i][j] = g2_arrays[i][g2_order[j]]  # possible
+        return g1, g2
+
+# for row in range(g1_size):
+#     for index, cell in enumerate(g1_order):
+#         g1[row][index] = g1_arrays[index][cell]
+#         print row, index, 'of g1 is now', g1_arrays[index][cell]
+# for row in range(g2_size):
+#     for index, cell in enumerate(g2_order):
+#         g2[row][index] = g2_arrays[index][cell]
+# return g1, g2
 
     @staticmethod
     def _create_symm_matrix(matrix):
