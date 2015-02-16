@@ -20,8 +20,8 @@ class RM:
         self.max_eig_val_vec = self.evec[self.max_eig_val]
         self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays = self._create_g_groups(self.a, self.evec)
         self.g1, self.g2 = self._create_g_matrices(self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays)
-        self.g1_threshold = self._create_threshold(self.g1_order)
-        self.g2_threshold = self._create_threshold(self.g2_order)
+        self.q1 = self._create_threshold(self.g1_order)
+        self.q2 = self._create_threshold(self.g2_order)
 
     def _create_matrix(self):
         """Creates random matrix with values (0, 1) based on size.
