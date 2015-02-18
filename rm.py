@@ -1,7 +1,5 @@
 import numpy as np
 from numpy.linalg import linalg
-import os
-
 
 class RM:
     def __init__(self, size=10):
