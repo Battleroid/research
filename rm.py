@@ -44,7 +44,8 @@ class RM:
         n_b_of = np.zeros((n_b.size, n_b.size))
         for i, row in enumerate(n_b_of):
             for j, col in enumerate(row):
-                # use equation
+                # use equation, use row.sum()
+                # n_b_of[i,j] = n_b[i,j] - same * (row.sum()) ?
                 same = 1 if i == j else 0
                 pass
 
