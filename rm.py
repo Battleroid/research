@@ -45,6 +45,7 @@ class RM:
         for i, row in enumerate(n_b_of):
             for j, col in enumerate(row):
                 # use equation
+                same = 1 if i == j else 0
                 pass
 
 
