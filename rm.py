@@ -6,6 +6,7 @@ import os
 class RM:
     def __init__(self, size=10):
         self.size = size
+        # a
         self.a = self._create_symm_matrix(self._create_matrix())
         self.ki, self.kj, self.m = self._create_ki_kj_m(self.a)
         # to assure that a random array is created that has at least 1 in every cell
@@ -15,13 +16,17 @@ class RM:
         self.p1 = self._create_p1()
         self.p = self._create_p()
         self.b = self.a - self.p
+        # eig
         self.eval, self.evec = linalg.eigh(self.b)  # eig or eigh for symmetric?
         self.max_eig_val = self._get_largest_eig_val(self.eval)
         self.max_eig_val_vec = self.evec[self.max_eig_val]
+        # g & q
         self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays = self._create_g_groups(self.a, self.evec)
         self.g1, self.g2 = self._create_g_matrices(self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays)
         self.q1 = self._create_threshold(self.g1_order)
         self.q2 = self._create_threshold(self.g2_order)
+        # b of g1/2
+        self._create_g_node(self.b, self.g1_order)
 
     def _create_matrix(self):
         """Creates random matrix with values (0, 1) based on size.
@@ -30,7 +35,24 @@ class RM:
         """
         return np.random.randint(0, 2, (self.size, self.size))
 
+    @staticmethod
+    def _create_g_node(b, g_order):
+        n_b = np.zeros((len(g_order), len(g_order)))
+        for i, row in enumerate(n_b):
+            for j, col in enumerate(row):
+                n_b[i][j] = b[g_order[i]][g_order[j]]
+        n_b_of = np.zeros((n_b.size, n_b.size))
+        for i, row in enumerate(n_b_of):
+            for j, col in enumerate(row):
+                # use equation
+                pass
+
+
     def _create_threshold(self, g_order):
+        """Obtains threshold (q) from g1/2 ordering.
+
+        :return float:
+        """
         s = np.matrix(np.zeros(self.size))
         for i in g_order:
             s[0,i] = 1
@@ -40,6 +62,10 @@ class RM:
 
     @staticmethod
     def _create_g_groups(matrix, evec):
+        """Intermediate step for creating g1/2 of A, gathers order of g1/2 arrays and corresponding arrays for building matrix.
+
+        :return list, matrix, list, matrix:
+        """
         g1_order = []
         g1_arrays = []
         g2_order = []
@@ -57,6 +83,10 @@ class RM:
 
     @staticmethod
     def _create_g_matrices(g1_order, g1_arrays, g2_order, g2_arrays):
+        """Using g1/2 order and arrays it assembles a new square matrix. Should be symmetric.
+
+        :return matrix, matrix:
+        """
         g1_size = len(g1_order)
         g2_size = len(g2_order)
         g1 = np.zeros((g1_size, g1_size), dtype=int)
