@@ -20,13 +20,14 @@ class RM:
         self.eval, self.evec = linalg.eigh(self.b)  # eig or eigh for symmetric?
         self.max_eig_val = self._get_largest_eig_val(self.eval)
         self.max_eig_val_vec = self.evec[self.max_eig_val]
-        # g & q
+        # g, s & q
         self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays = self._create_g_groups(self.a, self.evec)
         self.g1, self.g2 = self._create_g_matrices(self.g1_order, self.g1_arrays, self.g2_order, self.g2_arrays)
-        self.q1 = self._create_threshold(self.g1_order)
-        self.q2 = self._create_threshold(self.g2_order)
+        self.q1, self.s1 = self._create_threshold(self.g1_order)
+        self.q2, self.s2 = self._create_threshold(self.g2_order)
         # b of g1/2
-        self._create_g_node(self.b, self.g1_order)
+        self.b_g1 = self._create_g_node(self.b, self.g1_order)
+        self.b_g2 = self._create_g_node(self.b, self.g2_order)
 
     def _create_matrix(self):
         """Creates random matrix with values (0, 1) based on size.
@@ -41,26 +42,25 @@ class RM:
         for i, row in enumerate(n_b):
             for j, col in enumerate(row):
                 n_b[i][j] = b[g_order[i]][g_order[j]]
-        n_b_of = np.zeros((n_b.size, n_b.size))
-        for i, row in enumerate(n_b_of):
+        n_b_of_g = np.zeros((len(g_order), len(g_order)))
+        for i, row in enumerate(n_b_of_g):
             for j, col in enumerate(row):
-                # use equation, use row.sum()
-                # n_b_of[i,j] = n_b[i,j] - same * (row.sum()) ?
                 same = 1 if i == j else 0
-                pass
+                n_b_of_g[i][j] = n_b[i][j] - same * (row.sum())
+        return n_b_of_g
 
 
     def _create_threshold(self, g_order):
         """Obtains threshold (q) from g1/2 ordering.
 
-        :return float:
+        :return float, matrix:
         """
         s = np.matrix(np.zeros(self.size))
         for i in g_order:
             s[0,i] = 1
         res = np.dot(np.dot(s, self.b), s.T)
         res = res * (1. / (2. * self.m))
-        return res.item(0)
+        return res.item(0), s
 
     @staticmethod
     def _create_g_groups(matrix, evec):
