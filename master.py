@@ -2,6 +2,13 @@ import numpy as np
 from numpy import linalg
 import sys
 
+class CannotSplit(Exception):
+    def __init__(self, message):
+        if not message:
+            message = 'Cannot split, matrix too small.'
+        self.message = message
+
+
 def create_p1(shape, ki, kj):
     a = np.zeros(shape, dtype=np.int)
     for i, row in enumerate(a):
@@ -66,7 +73,34 @@ def create_b_of_g(b, order):
     return n_b_of_g
 
 
-def main(filename):
+def split(filename, ext):
+    # load and define basic constants
+    data = np.load(filename + "." + ext)
+    a = data['a']
+    b = data['b']
+    a_size = a.shape[0]
+    a_shape = a.shape
+    if a_size <= 1:
+        raise CannotSplit
+    # basic info (ki, kj, m)
+    ki, kj, m = np.sum(a, 1), np.sum(a, 0), np.sum(np.sum(a, 1))
+    # eval & evec
+    eval, evec = linalg.eigh(b)
+    # split
+    g1_order, g1_arrays, g2_order, g2_arrays = create_g(a, evec)
+    g1, g2 = create_g_matrix(g1_order, g1_arrays), create_g_matrix(g2_order, g2_arrays)
+    # threshold
+    q1 = create_q(a_size, b, g1_order, m)
+    q2 = create_q(a_size, b, g2_order, m)
+    # create new B of Gs
+    b1 = create_b_of_g(b, g1_order)
+    b2 = create_b_of_g(b, g2_order)
+    # save to new files
+    np.savez(filename + ",1." + ext, a=g1, q=q1, b=b1)
+    np.savez(filename + ",2." + ext, a=g2, q=q2, b=b2)
+
+
+def master(filename):
     # load file and define basic constants, separate method for csv/npz?
     data = np.load(filename)
     arr = data['arr_0']
@@ -88,6 +122,9 @@ def main(filename):
     # create B of Gs
     b1 = create_b_of_g(b, g1_order)
     b2 = create_b_of_g(b, g2_order)
+    # save to respective files
+    np.savez('g1.npz', a=g1, q=q1, b=b1)
+    np.savez('g2.npz', a=g2, q=q2, b=b2)
 
 
 def check():
@@ -98,6 +135,6 @@ def check():
 
 if __name__ == '__main__':
     if not check():
-        main(sys.argv[1])
+        master(sys.argv[1])
     else:
         print 'Database already has data.'
