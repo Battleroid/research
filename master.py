@@ -115,18 +115,9 @@ def split(filename, initial=False):
         np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2)
 
 
-def check():
-    # check if database has info (which means we already have and are working with
-    # an existing data set), if it does cancel out
-    pass
-
-
 if __name__ == '__main__':
     filename = sys.argv[1]
     initial = sys.argv[2]
     if not initial or initial != 'true':
         initial = False
-    if not check():
-        split(sys.argv[1])
-    else:
-        print 'Database already has data.'
+    split(filename, initial)
