@@ -12,8 +12,7 @@ class Base(Model):
 class File(Base):
     id = PrimaryKeyField()
     parent = ForeignKeyField('self', null=True, related_name='children')
-    name = CharField(unique=True, null=False)
+    filename = CharField(unique=True, null=False)
     ext = CharField(null=False)
     processed = BooleanField(default=False)
     q = DoubleField()
-    g_one = BooleanField()

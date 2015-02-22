@@ -3,7 +3,7 @@ from numpy import linalg
 import sys
 
 class CannotSplit(Exception):
-    def __init__(self, message):
+    def __init__(self, message=None):
         if not message:
             message = 'Cannot split, matrix too small.'
         self.message = message
@@ -73,58 +73,46 @@ def create_b_of_g(b, order):
     return n_b_of_g
 
 
-def split(filename, ext):
-    # load and define basic constants
+def split(filename, initial=False):
+    # load data
+    filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
-    a = data['a']
-    b = data['b']
-    a_size = a.shape[0]
-    a_shape = a.shape
-    if a_size <= 1:
+    # define constants and load A if initial
+    if initial:
+        A = data['arr_0']
+    else:
+        A = data['a']
+    A_SIZE = A.shape[0]
+    A_SHAPE = A.shape
+    # basics
+    ki, kj, m = np.sum(A, 1), np.sum(A, 0), np.sum(np.sum(A, 1))
+    # create B if initial, if not, import from archive
+    if initial:
+        p1 = create_p1(A_SHAPE, ki, kj)
+        p = create_p(p1, m)
+        B = A - p
+    else:
+        B = data['b']
+    if A_SIZE <= 1:
         raise CannotSplit
-    # basic info (ki, kj, m)
-    ki, kj, m = np.sum(a, 1), np.sum(a, 0), np.sum(np.sum(a, 1))
     # eval & evec
-    eval, evec = linalg.eigh(b)
+    eval, evec = linalg.eigh(B)
     # split
-    g1_order, g1_arrays, g2_order, g2_arrays = create_g(a, evec)
+    g1_order, g1_arrays, g2_order, g2_arrays = create_g(A, evec)
     g1, g2 = create_g_matrix(g1_order, g1_arrays), create_g_matrix(g2_order, g2_arrays)
-    # threshold
-    q1 = create_q(a_size, b, g1_order, m)
-    q2 = create_q(a_size, b, g2_order, m)
-    # create new B of Gs
-    b1 = create_b_of_g(b, g1_order)
-    b2 = create_b_of_g(b, g2_order)
-    # save to new files
-    np.savez(filename + ",1." + ext, a=g1, q=q1, b=b1)
-    np.savez(filename + ",2." + ext, a=g2, q=q2, b=b2)
-
-
-def master(filename):
-    # load file and define basic constants, separate method for csv/npz?
-    data = np.load(filename)
-    arr = data['arr_0']
-    arr_size = arr.shape[0]
-    arr_shape = arr.shape
-    # create initial B
-    ki, kj, m = np.sum(arr, 1), np.sum(arr, 0), np.sum(np.sum(arr, 1))
-    p1 = create_p1(arr_shape, ki, kj)
-    p = create_p(p1, m)
-    b = arr - p
-    # eval & evec
-    eval, evec = linalg.eigh(b)
-    # first master split
-    g1_order, g1_arrays, g2_order, g2_arrays = create_g(arr, evec)
-    g1, g2 = create_g_matrix(g1_order, g1_arrays), create_g_matrix(g1_order, g1_arrays)
-    # create threshold (q)
-    q1 = create_q(arr_size, b, g1_order, m)
-    q2 = create_q(arr_size, b, g2_order, m)
-    # create B of Gs
-    b1 = create_b_of_g(b, g1_order)
-    b2 = create_b_of_g(b, g2_order)
-    # save to respective files
-    np.savez('g1.npz', a=g1, q=q1, b=b1)
-    np.savez('g2.npz', a=g2, q=q2, b=b2)
+    # threshold (q)
+    q1 = create_q(A_SIZE, B, g1_order, m)
+    q2 = create_q(A_SIZE, B, g2_order, m)
+    # B of G
+    b1 = create_b_of_g(B, g1_order)
+    b2 = create_b_of_g(B, g2_order)
+    # save
+    if initial:
+        np.savez('g1.npz', a=g1, b=b1, q=q1)
+        np.savez('g2.npz', a=g2, b=b2, q=q2)
+    else:
+        np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1)
+        np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2)
 
 
 def check():
@@ -134,7 +122,11 @@ def check():
 
 
 if __name__ == '__main__':
+    filename = sys.argv[1]
+    initial = sys.argv[2]
+    if not initial or initial != 'true':
+        initial = False
     if not check():
-        master(sys.argv[1])
+        split(sys.argv[1])
     else:
         print 'Database already has data.'
