@@ -11,6 +11,8 @@ class RM:
         while 0 in self.ki:
             self.a = self._create_symm_matrix(self._create_matrix())
             self.ki, self.kj, self.m = self._create_ki_kj_m(self.a)
+        # ABOVE IS FOR SAMPLE WORK, INCLUDE IN SAMPLE.PY
+        # BEGIN ACTUAL WORK AND NOT JUST A SAMPLE
         self.p1 = self._create_p1()
         self.p = self._create_p()
         self.b = self.a - self.p
@@ -36,6 +38,7 @@ class RM:
 
     @staticmethod
     def _create_g_node(b, g_order):
+        # new B method
         n_b = np.zeros((len(g_order), len(g_order)))
         for i, row in enumerate(n_b):
             for j, col in enumerate(row):

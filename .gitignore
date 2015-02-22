@@ -1,3 +1,6 @@
 .idea
 *.pyc
 *.db
+*.swp
+*.npz
+*.npy
