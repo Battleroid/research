@@ -27,3 +27,4 @@ Currently only works on Numpy archives (npz). Eventually will need to introduce 
 * Possibly way to view the A for each `g*` group.
 * Probably not needed, but possibly a way to view the parent/children of a particular node (think like a tree view).
 * Need way to protect user from accidentally performing master split on non-master items.
+* I think adding another field to the database to just hold the size of the array (think 25x25, 5x5, etc) would be helpful. Would prevent needless attempts at splitting matrices that are too small.
