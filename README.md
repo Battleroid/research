@@ -16,6 +16,7 @@ Currently only works on Numpy archives (npz). Eventually will need to introduce 
 * `db c` -- creates tables for database
 * `db d` -- deletes tables for database
 * `db reset` -- performs `db d` then `db c`, alias essentially
+* `burn` -- destroys all files associated with database, then resets the database
 * `help` -- prints help information
 * `exit` -- exits manager
 
@@ -28,3 +29,4 @@ Currently only works on Numpy archives (npz). Eventually will need to introduce 
 * Probably not needed, but possibly a way to view the parent/children of a particular node (think like a tree view).
 * Need way to protect user from accidentally performing master split on non-master items.
 * I think adding another field to the database to just hold the size of the array (think 25x25, 5x5, etc) would be helpful. Would prevent needless attempts at splitting matrices that are too small.
+* Need way to confirm actions for `db` and `burn`! Possibly decorator function?
