@@ -50,7 +50,7 @@ s i -- split matrix i
 sf name -- split data stored in 'name', use only for first split
 db c -- create tables for database manually
 db d -- drop tables for database manually
-db reset -- perform both 'db c' and 'db d'
+db reset -- perform both 'db d' and 'db c'
 help -- print this information
 exit -- exit the manager
     """
@@ -72,6 +72,8 @@ def partition(idx):
         print 'ID %d does not exist!' % idx
     except AlreadyProcessed:
         print 'Cannot split %d, it has already been processed.' % idx
+    except ZeroDivisionError:
+        pass
     except master.CannotSplit:
         print 'Matrix cannot be split, shape is too small.'
         parent.processed = True
