@@ -3,7 +3,7 @@ Research material for senior project.
 
 ## instructions
 
-Run `python manager.py` to start menu for splitting/viewing information. You can also do the same with `python master.py filename.npz` to manually split.
+Run `python manager.py` to start menu for splitting/viewing information. You can also do the same with `python master.py filename.npz` for a regular split or `python master.py filename.npz true` to perform a master split.
 
 ## restrictions
 
