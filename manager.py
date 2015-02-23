@@ -144,5 +144,11 @@ def reset_database():
     create_table()
 
 
+def check_database():
+    if not files.File.table_exists():
+        create_table()
+
+
 if __name__ == '__main__':
+    check_database()
     main()
