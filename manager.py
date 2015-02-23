@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 from peewee import DoesNotExist
@@ -51,6 +52,7 @@ sf name -- split data stored in 'name', use only for first split
 db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
+burn -- removes all files associated with database
 help -- print this information
 exit -- exit the manager
     """
@@ -93,6 +95,8 @@ def choice(choice):
             drop_tables()
         elif action[0] == 'db' and action[1] == 'reset':
             reset_database()
+        elif action[0] == 'burn':
+            burn()
         elif action[0] == 'q':
             sys.exit(0)
         elif action[0] == 'help':
@@ -127,6 +131,20 @@ def menu():
             itemline += part
         print itemline
     print ''
+
+
+def burn():
+    file_list = ['.'.join((i.filename, i.ext)) for i in files.File.select()]
+    if not file_list:
+        print 'database empty, skipping'
+        return True
+    for f in file_list:
+        if os.path.exists(f):
+            print 'removing %s' % f
+            os.remove(f)
+    print 'resetting database'
+    reset_database()
+
 
 
 def create_table():
