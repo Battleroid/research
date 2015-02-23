@@ -1,10 +1,22 @@
 import re
 import sys
-import master, files
+from peewee import DoesNotExist
+import master
+import files
+
+
+class AlreadyProcessed(Exception):
+    def __init__(self, message=None):
+        if not message:
+            self.message = 'Matrix already processed, cannot reprocess.'
+        self.message = message
 
 
 def main():
-    pass
+    while True:
+        menu()
+        c = raw_input('> ')
+        choice(c)
 
 
 def build_choices():
@@ -32,19 +44,59 @@ def build_choices():
     return item_headers, menu_items, col_width
 
 
+def print_help():
+    print """
+s i -- split matrix i
+sf name -- split data stored in 'name', use only for first split
+db c -- create tables for database manually
+db d -- drop tables for database manually
+db reset -- perform both 'db c' and 'db d'
+help -- print this information
+exit -- exit the manager
+    """
+
+
+def partition(idx):
+    try:
+        idx = int(idx)
+        parent = files.File.get(id=idx)
+        if parent.processed:
+            raise AlreadyProcessed
+        print 'splitting %s' % parent.filename
+        f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
+        parent.processed = True
+        parent.save()
+        files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q)
+        files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q)
+    except DoesNotExist:
+        print 'ID %d does not exist!' % idx
+    except AlreadyProcessed:
+        print 'Cannot split %d, it has already been processed.' % idx
+    except master.CannotSplit:
+        print 'Matrix cannot be split, shape is too small.'
+        parent.processed = True
+        parent.save()
+
+
 def choice(choice):
     action = choice.split(' ')
     try:
         if action[0] == 's' and action[1]:
-            print 'split', action[1]
+            partition(action[1])
+        elif action[0] == 'sf' and action[1]:
+            master.split(action[1], True)
         elif action[0] == 'db' and action[1] == 'c':
-            print 'create db'
+            create_table()
         elif action[0] == 'db' and action[1] == 'd':
-            print 'delete db'
+            drop_tables()
         elif action[0] == 'db' and action[1] == 'reset':
-            print 'reset db'
+            reset_database()
         elif action[0] == 'q':
-            print 'quit manager'
+            sys.exit(0)
+        elif action[0] == 'help':
+            print_help()
+        elif action[0] == 'exit':
+            print 'exiting'
             sys.exit(0)
         else:
             print 'invalid input'
@@ -56,11 +108,11 @@ def choice(choice):
 
 def menu():
     headers, items, width = build_choices()
-    headline = ' '
+    headline = ''
     for header in headers:
         headline += header.title() + ' '
     print headline
-    separator = ' '
+    separator = ''
     for length in width:
         portion = ''
         while len(portion) < length:
@@ -68,10 +120,11 @@ def menu():
         separator += portion + ' '
     print separator
     for item in items:
-        itemline = ' '
+        itemline = ''
         for part in item:
             itemline += part
         print itemline
+    print ''
 
 
 def create_table():
@@ -85,8 +138,8 @@ def drop_tables():
 
 
 def reset_database():
-    create_table()
     drop_tables()
+    create_table()
 
 
 if __name__ == '__main__':

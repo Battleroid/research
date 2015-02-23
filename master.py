@@ -1,12 +1,21 @@
 import numpy as np
 from numpy import linalg
 import sys
+import files
+
 
 class CannotSplit(Exception):
     def __init__(self, message=None):
         if not message:
             message = 'Cannot split, matrix too small.'
         self.message = message
+
+
+class Part(object):
+    def __init__(self, filename, ext, q):
+        self.filename = filename
+        self.ext = ext
+        self.q = q
 
 
 def create_p1(shape, ki, kj):
@@ -108,11 +117,16 @@ def split(filename, initial=False):
     b2 = create_b_of_g(B, g2_order)
     # save
     if initial:
+        # first entries, so no need to return them and manipulate
         np.savez('g1.npz', a=g1, b=b1, q=q1)
         np.savez('g2.npz', a=g2, b=b2, q=q2)
+        files.File.create(filename='g1', ext=ext, q=q1)
+        files.File.create(filename='g2', ext=ext, q=q2)
     else:
+        # return to manager to set parents
         np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1)
         np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2)
+        return Part(filename + ",1", ext, q1), Part(filename + ",2", ext, q2)
 
 
 if __name__ == '__main__':
