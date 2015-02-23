@@ -1,6 +1,29 @@
 # research
 Research material for senior project.
 
-## details
+## instructions
 
-For now it is a class that performs the necessary actions required. Including generating a random array for each object. Later on, this may change to a set of methods instead.
+Run `python manager.py` to start menu for splitting/viewing information. You can also do the same with `python master.py filename.npz` to manually split.
+
+## restrictions
+
+Currently only works on Numpy archives (npz). Eventually will need to introduce a script to convert between csv/tsv possibly, depends on how the data I need is given to me.
+
+## basic help for `manager.py`
+
+* `s i` -- will split entry i
+* `sf name` -- will perform a master split on a filename (only use this for the master split!)
+* `db c` -- creates tables for database
+* `db d` -- deletes tables for database
+* `db reset` -- performs `db d` then `db c`, alias essentially
+* `help` -- prints help information
+* `exit` -- exits manager
+
+## todo
+
+* Currently it works as expected with the exception of one issue. During `create_p()` in `master.py` if it encounters a ZeroDivisionError it cancels out which in the previous `rm.py` it passed correctly (and simply left it as 0). However, it is not being skipped over as expected, need to find out why.
+* Conversion script to convert data to npz.
+* Command line options/functions so you can possibly skip starting `manager.py` to reset the DB or do the master split.
+* Possibly way to view the A for each `g*` group.
+* Probably not needed, but possibly a way to view the parent/children of a particular node (think like a tree view).
+* Need way to protect user from accidentally performing master split on non-master items.
