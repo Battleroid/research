@@ -30,3 +30,4 @@ Currently only works on Numpy archives (npz). Eventually will need to introduce 
 * Need way to protect user from accidentally performing master split on non-master items.
 * I think adding another field to the database to just hold the size of the array (think 25x25, 5x5, etc) would be helpful. Would prevent needless attempts at splitting matrices that are too small.
 * Need way to confirm actions for `db` and `burn`! Possibly decorator function?
+* Do some clean up and use `isdigit()` instead of a bunch of ValueErrors (can't believe I forget that simple junk).
