@@ -3,11 +3,9 @@ from peewee import CharField, SqliteDatabase, Model, PrimaryKeyField, BooleanFie
 
 database = SqliteDatabase('files.db')
 
-
 class Base(Model):
     class Meta:
         database = database
-
 
 class File(Base):
     id = PrimaryKeyField()
@@ -15,6 +13,6 @@ class File(Base):
     filename = CharField(unique=True, null=False)
     ext = CharField(null=False)
     processed = BooleanField(default=False)
-    # elems = TextField()
+    a_elems = TextField(null=True, default='none')
     shape = IntegerField()
     q = DoubleField()

@@ -3,21 +3,19 @@ from numpy import linalg
 import sys
 import files
 
-
 class CannotSplit(Exception):
     def __init__(self, message=None):
         if not message:
             message = 'Cannot split, matrix too small.'
         self.message = message
 
-
 class Part(object):
-    def __init__(self, filename, ext, q, shape):
+    def __init__(self, filename, ext, q, shape, a_elems):
         self.filename = filename
         self.ext = ext
         self.q = q
         self.shape = shape
-
+        self.a_elems = a_elems
 
 def create_p1(shape, ki, kj):
     a = np.zeros(shape, dtype=np.int)
@@ -25,7 +23,6 @@ def create_p1(shape, ki, kj):
         for j, col in enumerate(row):
             a[i][j] = ki[i] * kj[j]
     return a
-
 
 def create_p(p1, m):
     shape = p1.shape
@@ -37,7 +34,6 @@ def create_p(p1, m):
             except ZeroDivisionError:
                 pass
     return a
-
 
 def create_g(a, evec):
     g1_order, g2_order = [], []
@@ -51,7 +47,6 @@ def create_g(a, evec):
             g2_arrays.append(row)
     return g1_order, g1_arrays, g2_order, g2_arrays
 
-
 def create_g_matrix(order, arrays):
     size = len(order)
     g = np.zeros((size, size), dtype=np.int)
@@ -60,7 +55,6 @@ def create_g_matrix(order, arrays):
             g[i][j] = arrays[i][order[j]]
     return g
 
-
 def create_q(size, b, order, m):
     s = np.matrix(np.zeros(size))
     for i in order:
@@ -68,7 +62,6 @@ def create_q(size, b, order, m):
     a = np.dot(np.dot(s, b), s.T)
     a = a * (1. / (2. * m))
     return a.item(0)
-
 
 def create_b_of_g(b, order):
     n_b = np.zeros((len(order), len(order)))
@@ -81,7 +74,6 @@ def create_b_of_g(b, order):
             same = 1 if i == j else 0
             n_b_of_g[i][j] = n_b[i][j] - same * (row.sum())
     return n_b_of_g
-
 
 def split(filename, initial=False):
     # load data
@@ -116,18 +108,31 @@ def split(filename, initial=False):
     # B of G
     b1 = create_b_of_g(B, g1_order)
     b2 = create_b_of_g(B, g2_order)
+    # a elems
+    a1_elems = []
+    a2_elems = []
+    if initial:
+        a1_elems = g1_order
+        a2_elems = g2_order
+    else:
+        original_elems = data['a_elems']
+        for i in g1_order:
+            a1_elems.append(original_elems[i])
+        for i in g2_order:
+            a2_elems.append(original_elems[i])
     # save
     if initial:
         # first entries, so no need to return them and manipulate
-        np.savez('g1.npz', a=g1, b=b1, q=q1)
-        np.savez('g2.npz', a=g2, b=b2, q=q2)
-        files.File.create(filename='g1', ext=ext, q=q1, shape=g1.shape[0])
-        files.File.create(filename='g2', ext=ext, q=q2, shape=g2.shape[0])
+        np.savez('g1.npz', a=g1, b=b1, q=q1, a_elems=a1_elems)
+        np.savez('g2.npz', a=g2, b=b2, q=q2, a_elems=a2_elems)
+        files.File.create(filename='g1', ext=ext, q=q1, shape=g1.shape[0], a_elems=','.join([str(x) for x in a1_elems]))
+        files.File.create(filename='g2', ext=ext, q=q2, shape=g2.shape[0], a_elems=','.join([str(x) for x in a2_elems]))
     else:
         # return to manager to set parents
-        np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1)
-        np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2)
-        return Part(filename + ",1", ext, q1, g1.shape[0]), Part(filename + ",2", ext, q2, g2.shape[0])
+        np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1, a_elems=a1_elems)
+        np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2, a_elems=a2_elems)
+        return Part(filename + ",1", ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
+               Part(filename + ",2", ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def loadtxt(filename, save=True, stripe=True):
     a = []

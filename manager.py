@@ -5,13 +5,11 @@ from peewee import DoesNotExist
 import master
 import files
 
-
 class AlreadyProcessed(Exception):
     def __init__(self, message=None):
         if not message:
             self.message = 'Matrix already processed, cannot reprocess.'
         self.message = message
-
 
 def main():
     while True:
@@ -19,16 +17,18 @@ def main():
         c = raw_input('> ')
         choice(c)
 
-
 def build_choices():
     query = files.File.select()
     field_names = files.File._meta.get_field_names()
     items = [[f.id, f.processed, f.filename, f.q, f.shape] for f in query]
-    item_headers = [field_names[0], field_names[4], field_names[2], field_names[6], field_names[5]]
+    # id, processed, filename, q, shape, a_elems
+    item_headers = [field_names[0], field_names[4], field_names[2], field_names[7], field_names[6]]
     col_width = [0, 1, 0, 0, 0]
     for item in items:
         if len(str(item[0])) > col_width[0]:
             col_width[0] = len(str(item[0]))
+        if len(str(item[1])) > col_width[1]:
+            col_width[1] = len(str(item[1]))
         if len(item[2]) > col_width[2]:
             col_width[2] = len(item[2])
         if len(str(item[3])) > col_width[3]:
@@ -46,7 +46,6 @@ def build_choices():
         menu_items.append(foo)
     return item_headers, menu_items, col_width
 
-
 def print_help():
     print """
 s i -- split matrix i
@@ -62,19 +61,18 @@ help -- print this information
 exit -- exit the manager
     """
 
-
 def partition(idx):
     try:
         idx = int(idx)
         parent = files.File.get(id=idx)
         if parent.processed:
             raise AlreadyProcessed
-        print 'splitting %s' % parent.filename
+        print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         parent.processed = True
         parent.save()
-        files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape)
-        files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape)
+        files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
+        files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
     except DoesNotExist:
         print 'ID %d does not exist!' % idx
     except AlreadyProcessed:
@@ -91,7 +89,8 @@ def view(idx):
         idx = int(idx)
         target = files.File.get(id=idx)
         data = np.load(target.filename + '.' + target.ext)
-        print data['a']
+        print 'Matrix %s:', os.linesep, data['a'] % target.filename
+        print 'Origin elements for %s:', os.linesep, data['a_elems'] % target.filename
     except DoesNotExist:
         print 'ID %d does not exist!' % idx
 
@@ -116,20 +115,20 @@ def choice(choice):
             burn()
         elif action[0] == 'npt':
             np.set_printoptions(threshold=np.nan)
+            print 'Unlocked numpy threshold'
         elif action[0] == 'q':
             sys.exit(0)
         elif action[0] == 'help':
             print_help()
         elif action[0] == 'exit':
-            print 'exiting'
+            print 'Exiting'
             sys.exit(0)
         else:
-            print 'invalid input'
+            print 'Invalid input'
     except IndexError:
-        print 'missing argument'
+        print 'Missing argument'
     except ValueError:
-        print 'invalid input'
-
+        print 'Invalid input'
 
 def menu():
     headers, items, width = build_choices()
@@ -154,40 +153,33 @@ def menu():
         print itemline
     print ''
 
-
 def burn():
     file_list = ['.'.join((i.filename, i.ext)) for i in files.File.select()]
     if not file_list:
-        print 'database empty, skipping'
+        print 'Database empty, skipping.'
         return True
     for f in file_list:
         if os.path.exists(f):
-            print 'removing %s' % f
+            print 'Removing %s' % f
             os.remove(f)
-    print 'resetting database'
+    print 'Resetting database'
     reset_database()
-
-
 
 def create_table():
     files.database.connect()
     files.database.create_table(files.File)
 
-
 def drop_tables():
     files.database.connect()
     files.database.drop_table(files.File)
-
 
 def reset_database():
     drop_tables()
     create_table()
 
-
 def check_database():
     if not files.File.table_exists():
         create_table()
-
 
 if __name__ == '__main__':
     check_database()
