@@ -1,5 +1,5 @@
 from peewee import CharField, SqliteDatabase, Model, PrimaryKeyField, BooleanField, DoubleField, \
-    ForeignKeyField
+    ForeignKeyField, TextField, IntegerField
 
 database = SqliteDatabase('files.db')
 
@@ -15,4 +15,6 @@ class File(Base):
     filename = CharField(unique=True, null=False)
     ext = CharField(null=False)
     processed = BooleanField(default=False)
+    # elems = TextField()
+    shape = IntegerField()
     q = DoubleField()
