@@ -1,3 +1,4 @@
+import numpy as np
 import re
 import sys
 from peewee import DoesNotExist
@@ -22,9 +23,9 @@ def main():
 def build_choices():
     query = files.File.select()
     field_names = files.File._meta.get_field_names()
-    items = [[f.id, f.processed, f.filename, f.q] for f in query]
-    item_headers = [field_names[0], field_names[4], field_names[2], field_names[5]]
-    col_width = [0, 1, 0, 0]
+    items = [[f.id, f.processed, f.filename, f.q, f.shape] for f in query]
+    item_headers = [field_names[0], field_names[4], field_names[2], field_names[6], field_names[5]]
+    col_width = [0, 1, 0, 0, 0]
     for item in items:
         if len(str(item[0])) > col_width[0]:
             col_width[0] = len(str(item[0]))
@@ -32,6 +33,8 @@ def build_choices():
             col_width[2] = len(item[2])
         if len(str(item[3])) > col_width[3]:
             col_width[3] = len(str(item[3]))
+        if len(str(item[4])) > col_width[4]:
+            col_width[4] = len(str(item[4]))
     for i, header in enumerate(item_headers):
         if len(header) > col_width[i]:
             col_width[i] = len(header)
@@ -47,7 +50,9 @@ def build_choices():
 def print_help():
     print """
 s i -- split matrix i
+v i -- view matrix information of i
 sf name -- split data stored in 'name', use only for first split
+lt name -- load text file and split
 db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
@@ -66,8 +71,8 @@ def partition(idx):
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         parent.processed = True
         parent.save()
-        files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q)
-        files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q)
+        files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape)
+        files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape)
     except DoesNotExist:
         print 'ID %d does not exist!' % idx
     except AlreadyProcessed:
@@ -79,6 +84,14 @@ def partition(idx):
         parent.processed = True
         parent.save()
 
+def view(idx):
+    try:
+        idx = int(idx)
+        target = files.File.get(id=idx)
+        data = np.load(target.filename + '.' + target.ext)
+        print data['a']
+    except DoesNotExist:
+        print 'ID %d does not exist!' % idx
 
 def choice(choice):
     action = choice.split(' ')
@@ -87,6 +100,8 @@ def choice(choice):
             partition(action[1])
         elif action[0] == 'sf' and action[1]:
             master.split(action[1], True)
+        elif action[0] == 'lt':
+            master.loadtxt(action[1])
         elif action[0] == 'db' and action[1] == 'c':
             create_table()
         elif action[0] == 'db' and action[1] == 'd':
@@ -110,10 +125,12 @@ def choice(choice):
 
 def menu():
     headers, items, width = build_choices()
+    # headers
     headline = ''
-    for header in headers:
-        headline += header.title() + ' '
+    for idx, header in enumerate(headers):
+        headline += header.title().ljust(width[idx]) + ' '
     print headline
+    # ---
     separator = ''
     for length in width:
         portion = ''
@@ -121,6 +138,7 @@ def menu():
             portion += '-'
         separator += portion + ' '
     print separator
+    # items
     for item in items:
         itemline = ''
         for part in item:
