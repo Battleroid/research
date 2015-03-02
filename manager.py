@@ -49,6 +49,7 @@ def build_choices():
 def print_help():
     print """
 s i -- split matrix i
+sall -- recursively partition until all values are false
 v i -- view matrix information of i
 sf name -- split data stored in 'name', use only for first split
 lt name -- load text file and split
@@ -57,22 +58,28 @@ db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
 burn -- removes all files associated with database
 npt -- unlock numpy threshold
+shape -- change shape threshold (default 5)
+qth -- change q threshold (default 0)
 help -- print this information
 exit -- exit the manager
     """
 
 def partition(idx):
+    global SHAPE_THRESHOLD
+    global Q_THRESHOLD
     try:
         idx = int(idx)
         parent = files.File.get(id=idx)
         if parent.processed:
             raise AlreadyProcessed
-        if 5 >= parent.shape:
-            raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (5, 5))
+        if SHAPE_THRESHOLD >= parent.shape:
+            raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         parent.processed = True
         parent.save()
+        if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
+            raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
     except DoesNotExist:
@@ -83,16 +90,28 @@ def partition(idx):
         pass
     except master.CannotSplit, e:
         print e.message
+        # parent.processed = True
+        # parent.save()
+    finally:
         parent.processed = True
         parent.save()
+
+def partitionall():
+    if [x.processed for x in files.File.select().where(files.File.processed == False)]:
+        [partition(z.id) for z in files.File.select().where(files.File.processed == False)]
+    if [x.processed for x in files.File.select().where(files.File.processed == False)]:
+        return partitionall()
+    else:
+        print 'Finished'
+        return
 
 def view(idx):
     try:
         idx = int(idx)
         target = files.File.get(id=idx)
         data = np.load(target.filename + '.' + target.ext)
-        print 'Matrix %s:', os.linesep, data['a'] % target.filename
-        print 'Origin elements for %s:', os.linesep, data['a_elems'] % target.filename
+        print 'Matrix', target.filename, os.linesep, data['a'] 
+        print 'Origin elements for', target.filename,  os.linesep, data['a_elems'] 
     except DoesNotExist:
         print 'ID %d does not exist!' % idx
 
@@ -101,6 +120,8 @@ def choice(choice):
     try:
         if action[0] == 's' and action[1]:
             partition(action[1])
+        elif action[0] == 'sall':
+            partitionall()
         elif action[0] == 'v' and action[1]:
             view(action[1])
         elif action[0] == 'sf' and action[1]:
@@ -118,6 +139,14 @@ def choice(choice):
         elif action[0] == 'npt':
             np.set_printoptions(threshold=np.nan)
             print 'Unlocked numpy threshold'
+        elif action[0] == 'shape':
+            global SHAPE_THRESHOLD
+            SHAPE_THRESHOLD = int(action[1])
+            print 'Shape threshold changed to %d' % SHAPE_THRESHOLD
+        elif action[0] == 'qth':
+            global Q_THRESHOLD
+            Q_THRESHOLD = float(action[1])
+            print 'Q threshold changed to %d' % Q_THRESHOLD
         elif action[0] == 'q':
             sys.exit(0)
         elif action[0] == 'help':
@@ -183,6 +212,10 @@ def check_database():
     if not files.File.table_exists():
         create_table()
 
+SHAPE_THRESHOLD = 5
+Q_THRESHOLD = 0
+
 if __name__ == '__main__':
+    print SHAPE_THRESHOLD, Q_THRESHOLD
     check_database()
     main()
