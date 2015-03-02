@@ -121,6 +121,8 @@ def split(filename, initial=False):
         for i in g2_order:
             a2_elems.append(original_elems[i])
     # save
+    if not g1_order or not g2_order:
+        raise CannotSplit(message='One group is empty, cannot split.')
     if initial:
         # first entries, so no need to return them and manipulate
         np.savez('g1.npz', a=g1, b=b1, q=q1, a_elems=a1_elems)
@@ -147,6 +149,15 @@ def loadtxt(filename, save=True, stripe=True):
         np.savez('data.npz', b)
     else:
         return b
+
+def remove_blanks(mat):
+    ids = []
+    for idx, row in enumerate(mat):
+        if not 1 in row:
+            ids.append(idx)
+    mat = np.delete(mat, ids, 0)
+    mat = np.delete(mat, ids, 1)
+    return mat
 
 if __name__ == '__main__':
     filename = sys.argv[1]
