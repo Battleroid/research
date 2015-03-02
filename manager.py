@@ -67,6 +67,8 @@ def partition(idx):
         parent = files.File.get(id=idx)
         if parent.processed:
             raise AlreadyProcessed
+        if 5 >= parent.shape:
+            raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (5, 5))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         parent.processed = True
@@ -79,8 +81,8 @@ def partition(idx):
         print 'Cannot split %d, it has already been processed.' % idx
     except ZeroDivisionError:
         pass
-    except master.CannotSplit:
-        print 'Matrix cannot be split, shape is too small.'
+    except master.CannotSplit, e:
+        print e.message
         parent.processed = True
         parent.save()
 
