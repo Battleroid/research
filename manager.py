@@ -1,6 +1,5 @@
 import numpy as np
 import os
-import re
 import sys
 from peewee import DoesNotExist
 import master
@@ -58,6 +57,7 @@ db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
 burn -- removes all files associated with database
+npt -- unlock numpy threshold
 help -- print this information
 exit -- exit the manager
     """
@@ -100,6 +100,8 @@ def choice(choice):
     try:
         if action[0] == 's' and action[1]:
             partition(action[1])
+        elif action[0] == 'v' and action[1]:
+            view(action[1])
         elif action[0] == 'sf' and action[1]:
             master.split(action[1], True)
         elif action[0] == 'lt':
@@ -112,6 +114,8 @@ def choice(choice):
             reset_database()
         elif action[0] == 'burn':
             burn()
+        elif action[0] == 'npt':
+            np.set_printoptions(threshold=np.nan)
         elif action[0] == 'q':
             sys.exit(0)
         elif action[0] == 'help':
