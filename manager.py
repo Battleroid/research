@@ -164,9 +164,15 @@ def choice(choice):
         elif action[0] == 'db' and action[1] == 'd':
             drop_tables()
         elif action[0] == 'db' and action[1] == 'reset':
-            reset_database()
+            if confirm():
+                reset_database()
+            else:
+                print 'Aborted'
         elif action[0] == 'burn':
-            burn()
+            if confirm():
+                burn()
+            else:
+                print 'Aborted'
         elif action[0] == 'npt':
             np.set_printoptions(threshold=np.nan)
             print 'Unlocked numpy threshold'
