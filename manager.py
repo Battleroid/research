@@ -19,7 +19,7 @@ def main():
         choice(c)
 
 def build_choices():
-    query = files.File.select()
+    query = files.File.select().iterator()
     field_names = files.File._meta.get_field_names()
     items = [[f.id, f.processed, f.filename, f.q, f.shape] for f in query]
     # id, processed, filename, q, shape, a_elems
@@ -98,9 +98,9 @@ def partition(idx):
         parent.save()
 
 def partitionall():
-    if [x.processed for x in files.File.select().where(files.File.processed == False)]:
+    if [x.processed for x in files.File.select().where(files.File.processed == False).iterator()]:
         [partition(z.id) for z in files.File.select().where(files.File.processed == False)]
-    if [x.processed for x in files.File.select().where(files.File.processed == False)]:
+    if [x.processed for x in files.File.select().where(files.File.processed == False).iterator()]:
         return partitionall()
     else:
         print 'Finished'
