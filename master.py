@@ -136,7 +136,7 @@ def split(filename, initial=False):
         return Part(filename + ",1", ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
                Part(filename + ",2", ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
-def loadtxt(filename, save=True, stripe=True):
+def loadtxt(filename, save=True, stripe=True, blank=False):
     a = []
     f = open(filename, 'r')
     for line in f.readlines():
@@ -145,6 +145,8 @@ def loadtxt(filename, save=True, stripe=True):
         a.append(elems)
     b = np.array(a, dtype=np.int)
     np.fill_diagonal(b, 0)
+    if blank:
+        b = remove_blanks(b)
     if save:
         np.savez('data.npz', b)
     else:

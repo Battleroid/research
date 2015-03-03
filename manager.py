@@ -15,6 +15,7 @@ def main():
     while True:
         menu()
         c = raw_input('> ')
+        print ''
         choice(c)
 
 def build_choices():
@@ -49,10 +50,12 @@ def build_choices():
 def print_help():
     print """
 s i -- split matrix i
+sr i-j -- split nodes i through j
+ss i,j,k -- split a list of nodes with a comma delimiter
 sall -- recursively partition until all values are false
-v i -- view matrix information of i
+v i -- view matrix information of i, if it has a parent it is viewable as well
 sf name -- split data stored in 'name', use only for first split
-lt name -- load text file and split
+lt name -- load text file and split (add 'blank' to remove blanked rows/cols)
 db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
@@ -90,8 +93,6 @@ def partition(idx):
         pass
     except master.CannotSplit, e:
         print e.message
-        # parent.processed = True
-        # parent.save()
     finally:
         parent.processed = True
         parent.save()
@@ -112,14 +113,41 @@ def view(idx):
         data = np.load(target.filename + '.' + target.ext)
         print 'Matrix', target.filename, os.linesep, data['a'] 
         print 'Origin elements for', target.filename,  os.linesep, data['a_elems'] 
+        parent_id = target.parent.id
+        if confirm('Do you want to view the parent? y/n: '):
+            view(parent_id)
     except DoesNotExist:
         print 'ID %d does not exist!' % idx
+    except AttributeError:
+        print 'No parent could be found (possible that this is the master split).'
+
+def confirm(message='Are you sure? y/n: '):
+    while True:
+        i = raw_input(message)
+        if i[0] == 'y':
+            return True
+        elif i[0] == 'n':
+            return False
+        else:
+            print 'Invalid input'
 
 def choice(choice):
     action = choice.split(' ')
     try:
         if action[0] == 's' and action[1]:
             partition(action[1])
+        elif action[0] == 'sr' and action[1]:
+            begin, end = action[1].split('-')[:2]
+            if end > begin:
+                for i in range(int(begin), int(end) + 1):
+                    partition(i)
+            else:
+                print 'Beginning of range must be lower than ending'
+        elif action[0] == 'ss' and action[1]:
+            to_part = action[1].split(',')
+            [int(x) for x in to_part]
+            for piece in to_part:
+                partition(piece)
         elif action[0] == 'sall':
             partitionall()
         elif action[0] == 'v' and action[1]:
@@ -127,7 +155,10 @@ def choice(choice):
         elif action[0] == 'sf' and action[1]:
             master.split(action[1], True)
         elif action[0] == 'lt':
-            master.loadtxt(action[1])
+            if action[2] == 'blank':
+                master.loadtxt(action[1], blank=True)
+            else:
+                master.loadtxt(action[1])
         elif action[0] == 'db' and action[1] == 'c':
             create_table()
         elif action[0] == 'db' and action[1] == 'd':
@@ -158,12 +189,14 @@ def choice(choice):
             print 'Invalid input'
     except IndexError:
         print 'Missing argument'
-    except ValueError:
+    except (ValueError, TypeError, UnboundLocalError):
         print 'Invalid input'
+    except IOError:
+        print 'File cannot be found.'
 
 def menu():
-    headers, items, width = build_choices()
     # headers
+    headers, items, width = build_choices()
     headline = ''
     for idx, header in enumerate(headers):
         headline += header.title().ljust(width[idx]) + ' '
@@ -216,6 +249,5 @@ SHAPE_THRESHOLD = 5
 Q_THRESHOLD = 0
 
 if __name__ == '__main__':
-    print SHAPE_THRESHOLD, Q_THRESHOLD
     check_database()
     main()
