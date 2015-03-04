@@ -15,11 +15,14 @@ def main():
     while True:
         menu()
         c = raw_input('> ')
-        print ''
         choice(c)
 
 def build_choices():
-    query = files.File.select().iterator()
+    global VIEW_ONLY_LEAVES
+    if VIEW_ONLY_LEAVES:
+        query = files.File.select().where(files.File.leaf == True).iterator()
+    else:
+        query = files.File.select().iterator()
     field_names = files.File._meta.get_field_names()
     items = [[f.id, f.processed, f.filename, f.q, f.shape] for f in query]
     # id, processed, filename, q, shape, a_elems
@@ -55,7 +58,7 @@ ss i,j,k -- split a list of nodes with a comma delimiter
 sall -- recursively partition until all values are false
 v i -- view matrix information of i, if it has a parent it is viewable as well
 sf name -- split data stored in 'name', use only for first split
-lt name -- load text file and split (add 'blank' to remove blanked rows/cols)
+lt name -- load text file and split
 db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
@@ -79,8 +82,6 @@ def partition(idx):
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        parent.processed = True
-        parent.save()
         if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
@@ -92,6 +93,7 @@ def partition(idx):
     except ZeroDivisionError:
         pass
     except master.CannotSplit, e:
+        parent.leaf = True
         print e.message
     finally:
         parent.processed = True
@@ -152,13 +154,14 @@ def choice(choice):
             partitionall()
         elif action[0] == 'v' and action[1]:
             view(action[1])
+        elif action[0] == 'tl':
+            global VIEW_ONLY_LEAVES
+            VIEW_ONLY_LEAVES = not VIEW_ONLY_LEAVES
+            print 'Toggled Leaves Only mode to %s' % str(VIEW_ONLY_LEAVES)
         elif action[0] == 'sf' and action[1]:
             master.split(action[1], True)
         elif action[0] == 'lt':
-            if action[2] == 'blank':
-                master.loadtxt(action[1], blank=True)
-            else:
-                master.loadtxt(action[1])
+            master.loadtxt(action[1])
         elif action[0] == 'db' and action[1] == 'c':
             create_table()
         elif action[0] == 'db' and action[1] == 'd':
@@ -253,6 +256,7 @@ def check_database():
 
 SHAPE_THRESHOLD = 5
 Q_THRESHOLD = 0
+VIEW_ONLY_LEAVES = False
 
 if __name__ == '__main__':
     check_database()

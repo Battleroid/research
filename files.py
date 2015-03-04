@@ -16,3 +16,4 @@ class File(Base):
     a_elems = TextField(null=True, default='none')
     shape = IntegerField()
     q = DoubleField()
+    leaf = BooleanField(default=False)
