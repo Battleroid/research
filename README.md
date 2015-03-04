@@ -33,3 +33,6 @@ Works on numpy archives (npz), will load basic bitstrings from text files.
 
 * Command line options/functions so you can possibly skip starting `manager.py` to reset the DB or do the master split.
 * Do some clean up and use `isdigit()` instead of a bunch of ValueErrors (can't believe I forget that simple junk).
+* Need clarification on [checking the thresholds][threshold]. If I check both the shape and Q beforehand it pretty stops immediately at the beginning because both of Qs from the master splits are below zero. However, if I only check the Qs of the splits, it performs fine. Question is: should I check the Q before splitting? Or should I only check the Qs of the splits and cancel the split if either is beyond the threshold, or should I only abandon the group that did not fit the threshold? Either are easily doable, just need to know which is what is needed.
+
+[threshold]: https://github.com/Battleroid/research/blob/master/manager.py#L84-L96
