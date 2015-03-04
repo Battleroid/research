@@ -81,6 +81,10 @@ def partition(idx):
         if SHAPE_THRESHOLD >= parent.shape:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
         print 'Splitting %s' % parent.filename
+        # make note: you may end up with MORE files than are visible in the database, this is
+        # because the split function SAVES the files regardless before returning the results as
+        # Part objects. So the database is still correct, you just might end up with more cleanup than
+        # you think.
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
