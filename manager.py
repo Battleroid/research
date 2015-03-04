@@ -57,6 +57,7 @@ sr i-j -- split nodes i through j
 ss i,j,k -- split a list of nodes with a comma delimiter
 sall -- recursively partition until all values are false
 v i -- view matrix information of i, if it has a parent it is viewable as well
+tl -- toggle leaves only mode
 sf name -- split data stored in 'name', use only for first split
 lt name -- load text file and split
 db c -- create tables for database manually
