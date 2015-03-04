@@ -112,7 +112,7 @@ def partition(idx):
 
 def partitionall():
     if [x.processed for x in files.File.select().where(files.File.processed == False).iterator()]:
-        [partition(z.id) for z in files.File.select().where(files.File.processed == False)]
+        [partition(z.id) for z in files.File.select().where(files.File.processed == False).iterator()]
     if [x.processed for x in files.File.select().where(files.File.processed == False).iterator()]:
         return partitionall()
     else:
