@@ -110,9 +110,18 @@ def saveall(directory='results', leaves_only=True):
     else:
         filenames = {f.filename: '.'.join((f.filename, f.ext)) for f in files.File.select().where(files.File.processed == True).iterator()}
     for key, val in filenames.iteritems():
-        print 'Saving %s into %s' % (key, '.'.join((key, 'txt')))
-        a = np.load(val)['a']
-        np.savetxt(os.path.join(directory, '.'.join((key, 'txt'))), a, fmt='%i', delimiter='', header=key)
+        print 'Saving %s' % key
+        data = np.load(val)
+        a = data['a']
+        a_elems = data['a_elems']
+        shape = len(a_elems)
+        with open(os.path.join(directory, '.'.join((key, 'txt'))), 'w') as f:
+            # header
+            f.write('# name: %s, total elements: %d%s' % (key, shape, os.linesep))
+            for idx, row in enumerate(a):
+                # bitstring
+                line = '%04d: %s%s' % (a_elems[idx], ''.join(map(str, row)), os.linesep)
+                f.write(line)
     print 'Finished'
 
 
