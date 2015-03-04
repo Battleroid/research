@@ -80,12 +80,17 @@ def partition(idx):
             raise AlreadyProcessed
         if SHAPE_THRESHOLD >= parent.shape:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
+        # check q of parent before moving on?
+        # if Q_THRESHOLD >= parent.q:
+        #     raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         print 'Splitting %s' % parent.filename
         # make note: you may end up with MORE files than are visible in the database, this is
         # because the split function SAVES the files regardless before returning the results as
         # Part objects. So the database is still correct, you just might end up with more cleanup than
         # you think.
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
+        # question: if the Q threshold is on either do we save them? Or do we not save that node?
+        # if we only abandon the one, just make it to an if statement for each
         if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
@@ -97,6 +102,7 @@ def partition(idx):
     except ZeroDivisionError:
         pass
     except master.CannotSplit, e:
+        # sets parent leaf to true, however, may need to change
         parent.leaf = True
         print e.message
     finally:
