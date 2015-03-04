@@ -1,3 +1,7 @@
+*.zip
+*.tar.gz
+results
+dna
 *.txt
 .idea
 *.pyc

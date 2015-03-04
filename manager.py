@@ -60,6 +60,7 @@ v i -- view matrix information of i, if it has a parent it is viewable as well
 tl -- toggle leaves only mode
 sf name -- split data stored in 'name', use only for first split
 lt name -- load text file and split
+saveall (name) -- save all results (leaves by default) to bitstrings in text files
 db c -- create tables for database manually
 db d -- drop tables for database manually
 db reset -- perform both 'db d' and 'db c'
@@ -81,22 +82,8 @@ def partition(idx):
             raise AlreadyProcessed
         if SHAPE_THRESHOLD >= parent.shape:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
-        # check q of parent before moving on?
-        # if Q_THRESHOLD >= parent.q:
-        #     raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         print 'Splitting %s' % parent.filename
-        # make note: you may end up with MORE files than are visible in the database, this is
-        # because the split function SAVES the files regardless before returning the results as
-        # Part objects. So the database is still correct, you just might end up with more cleanup than
-        # you think.
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        # question: if the Q threshold is on either do we save them? Or do we not save that node?
-        # if we only abandon the one, just make it to an if statement for each
-        # note: use the following if checking threshold of each and only keeping the ones that pass
-        # if f1.q >= Q_THRESHOLD:
-        #     files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
-        # if f2.q >= Q_THRESHOLD:
-        #     files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
         if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
@@ -114,6 +101,20 @@ def partition(idx):
     finally:
         parent.processed = True
         parent.save()
+
+def saveall(directory='results', leaves_only=True):
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+    if leaves_only:
+        filenames = {f.filename: '.'.join((f.filename, f.ext)) for f in files.File.select().where(files.File.leaf == True).iterator()}
+    else:
+        filenames = {f.filename: '.'.join((f.filename, f.ext)) for f in files.File.select().where(files.File.processed == True).iterator()}
+    for key, val in filenames.iteritems():
+        print 'Saving %s into %s' % (key, '.'.join((key, 'txt')))
+        a = np.load(val)['a']
+        np.savetxt(os.path.join(directory, '.'.join((key, 'txt'))), a, fmt='%i', delimiter='', header=key)
+    print 'Finished'
+
 
 def partitionall():
     if [x.processed for x in files.File.select().where(files.File.processed == False).iterator()]:
@@ -176,8 +177,10 @@ def choice(choice):
             print 'Toggled Leaves Only mode to %s' % str(VIEW_ONLY_LEAVES)
         elif action[0] == 'sf' and action[1]:
             master.split(action[1], True)
-        elif action[0] == 'lt':
+        elif action[0] == 'lt' and action[1]:
             master.loadtxt(action[1])
+        elif action[0] == 'saveall' and action[1]:
+            saveall(action[1])
         elif action[0] == 'db' and action[1] == 'c':
             create_table()
         elif action[0] == 'db' and action[1] == 'd':
@@ -256,11 +259,11 @@ def burn():
 
 def create_table():
     files.database.connect()
-    files.database.create_table(files.File)
+    files.database.create_tables([files.File])
 
 def drop_tables():
     files.database.connect()
-    files.database.drop_table(files.File)
+    files.database.drop_tables([files.File])
 
 def reset_database():
     drop_tables()
