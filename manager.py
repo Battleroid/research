@@ -92,6 +92,11 @@ def partition(idx):
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
         # question: if the Q threshold is on either do we save them? Or do we not save that node?
         # if we only abandon the one, just make it to an if statement for each
+        # note: use the following if checking threshold of each and only keeping the ones that pass
+        # if f1.q >= Q_THRESHOLD:
+        #     files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
+        # if f2.q >= Q_THRESHOLD:
+        #     files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
         if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
