@@ -380,4 +380,4 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
             return True
 
 if __name__ == '__main__':
-    Manager().cmdloop(intro='Manage the splitting of data sets.')
+    Manager().cmdloop(intro='Manage the splitting of data.')
