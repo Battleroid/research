@@ -60,12 +60,16 @@ def saveall(directory='results', leaves_only=True):
         q = data['q']
         a_elems = data['a_elems']
         shape = len(a_elems)
+        # change shape to something configurable
+        leafstring = np.zeros(376, dtype=np.int)
+        for a in a_elems:
+            leafstring[a] = 1
         with open(os.path.join(directory, fn), 'w') as f:
             # header
             f.write('# name: %s, total elements: %d, q: %.64f%s' % (key, shape, q, os.linesep))
             for idx, row in enumerate(a):
                 # bitstring
-                line = '%04d: %s%s' % (a_elems[idx], ''.join(map(str, row)), os.linesep)
+                line = '%04d: %s%s%s' % (a_elems[idx], ''.join(map(str, row)), os.linesep, ''.join(map(str, leafstring)))
                 f.write(line)
     print 'Finished'
 
@@ -156,6 +160,28 @@ class Manager(Cmd):
 
     def _set_numpy_lw(self, val):
         np.set_printoptions(linewidth=val)
+
+    def help_show_settings(self):
+        print 'Show all settings and their current values.'
+
+    def do_show_settings(self, line):
+        table = Texttable()
+        headers = ['Setting', 'Value']
+        rows = [
+            ['Numpy Line Width', self.NUMPY_LW],
+            ['Numpy Threshold', self.NUMPY_THRESHOLD],
+            ['Q Threshold', self.Q_THRESHOLD],
+            ['Shape Threshold', self.SHAPE_THRESHOLD],
+            ['Q Check', '>' if self.GT_THAN_ZERO else '<='],
+            ['Show Menu Post Cmd?', 'Yes' if self.SHOW_MENU_AFTER_CMD else 'No'],
+            ['Leaves Only Mode?', 'Yes' if self.VIEW_ONLY_LEAVES else 'No']
+        ]
+        rows.sort()
+        rows.insert(0, headers)
+        table.add_rows(rows)
+        table.set_cols_align(['r', 'l'])
+        table.set_deco(Texttable.HEADER | Texttable.VLINES)
+        print table.draw()
 
     def help_save_all(self):
         print 'Save all nodes to text files. Default directory is \'results\'. \
