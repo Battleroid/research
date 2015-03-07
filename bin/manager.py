@@ -62,15 +62,19 @@ def saveall(directory='results', leaves_only=True):
         shape = len(a_elems)
         # change shape to something configurable
         leafstring = np.zeros(376, dtype=np.int)
-        for a in a_elems:
-            leafstring[a] = 1
+        for i in a_elems:
+            leafstring[i] = 1
+        leafstring_str = ''.join(map(str, leafstring))
         with open(os.path.join(directory, fn), 'w') as f:
             # header
             f.write('# name: %s, total elements: %d, q: %.64f%s' % (key, shape, q, os.linesep))
             for idx, row in enumerate(a):
                 # bitstring
-                line = '%04d: %s%s%s' % (a_elems[idx], ''.join(map(str, row)), os.linesep, ''.join(map(str, leafstring)))
+                row_str = ''.join(map(str, row))
+                line = '%04d: %s%s' % (a_elems[idx], row_str, os.linesep)
                 f.write(line)
+            # leafstring
+            f.write('%s' % leafstring_str)
     print 'Finished'
 
 def partitionall(SHAPE_THRESHOLD=5, Q_THRESHOLD=0.0):
@@ -194,8 +198,7 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
         line = line.split()
         directory = line[0]
         if not os.path.exists(directory):
-            print '%s does not exist!' % directory
-            return
+            os.mkdir(directory)
         saveall(directory, leaves_only=self.VIEW_ONLY_LEAVES)
 
     def help_set_q(self):

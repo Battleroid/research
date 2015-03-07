@@ -80,10 +80,11 @@ def split(filename, initial=False):
     filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
     # define constants and load A if initial
-    if initial:
-        A = data['arr_0']
-    else:
-        A = data['a']
+    # if initial:
+    #     A = data['arr_0']
+    # else:
+    #     A = data['a']
+    A = data['a']
     A_SIZE = A.shape[0]
     A_SHAPE = A.shape
     # basics
@@ -149,7 +150,7 @@ def loadtxt(filename, save=True, stripe=True, blank=False):
     if blank:
         b = remove_blanks(b)
     if save:
-        np.savez('.'.join((fn, '.npz')), a=b)
+        np.savez('.'.join((fn, 'npz')), a=b)
     else:
         return b
 
