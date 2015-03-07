@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.0'
+__version__ = '1.0.2'
 
 from cmd import Cmd
 from texttable import Texttable
@@ -8,8 +8,6 @@ import os
 from peewee import DoesNotExist
 from research.files import File, database as db
 from research import master
-# import master
-# from files import File, database as db
 
 class AlreadyProcessed(Exception):
     def __init__(self, message=None):
@@ -242,12 +240,16 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
         print 'View node information of specified ID.'
 
     def do_view(self, line):
-        line = line.split()
-        if not line:
-            print 'Missing arguments.'
+        try:
+            line = line.split()
+            if not line:
+                print 'Missing arguments.'
+                return
+            idx = int(line[0])
+            view(idx)
+        except ValueError:
+            print '%s is not an integer.' % ' '.join(line)
             return
-        idx = int(line[0])
-        view(idx)
 
     def complete_view(self, text, line, begidx, endidx):
         if not text:
