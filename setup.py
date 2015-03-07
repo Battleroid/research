@@ -2,13 +2,13 @@ from setuptools import setup
 
 setup(
     name='research',
-    version='v1.0',
-    packages=[''],
+    version='1.0',
     url='https://github.com/Battleroid/research',
     license='',
     author='Casey Weed',
     author_email='casweed@gmail.com',
     description='',
-    install_requires=['numpy'],
-    py_modules=['manager']
+    packages=['research'],
+    scripts=['bin/manager.py'],
+    install_requires=['numpy']
 )

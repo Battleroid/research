@@ -1,13 +1,15 @@
 __author__ = 'Casey Weed'
-__version__ = 'v1.0'
+__version__ = '1.0'
 
 from cmd import Cmd
 from texttable import Texttable
 import numpy as np
 import os
 from peewee import DoesNotExist
-import master
-from files import File, database as db
+from research.files import File, database as db
+from research import master
+# import master
+# from files import File, database as db
 
 class AlreadyProcessed(Exception):
     def __init__(self, message=None):
