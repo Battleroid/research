@@ -196,7 +196,7 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
             return
         try:
             new_numpy_lw = int(line.strip())
-            self._set_numpy_lw(line)
+            self._set_numpy_lw(new_numpy_lw)
             print 'Numpy line width set to %i.' % new_numpy_lw
         except ValueError:
             print '%s is not an integer.' % line
