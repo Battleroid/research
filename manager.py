@@ -84,7 +84,8 @@ def partition(idx):
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
+        # if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
+        if not f1.q > Q_THRESHOLD or not f2.q > Q_THRESHOLD:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         files.File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         files.File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
@@ -115,9 +116,10 @@ def saveall(directory='results', leaves_only=True):
         a = data['a']
         a_elems = data['a_elems']
         shape = len(a_elems)
+        q = data['q']
         with open(os.path.join(directory, '.'.join((key, 'txt'))), 'w') as f:
             # header
-            f.write('# name: %s, total elements: %d%s' % (key, shape, os.linesep))
+            f.write('# name: %s, total elements: %d, q: %.128f%s' % (key, shape, q, os.linesep))
             for idx, row in enumerate(a):
                 # bitstring
                 line = '%04d: %s%s' % (a_elems[idx], ''.join(map(str, row)), os.linesep)
