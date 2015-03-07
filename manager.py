@@ -188,7 +188,7 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
             return
 
     def help_set_numpy_lw(self):
-        pass
+        print 'Set Numpy line width. Currently set to %i.' % self.NUMPY_LW
 
     def do_set_numpy_lw(self, line):
         if not line:
