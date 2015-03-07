@@ -139,6 +139,7 @@ def split(filename, initial=False):
 def loadtxt(filename, save=True, stripe=True, blank=False):
     a = []
     f = open(filename, 'r')
+    fn = filename.split('.')[0]
     for line in f.readlines():
         line = line.strip()
         elems = [int(i) for i in list(line)]
@@ -148,7 +149,7 @@ def loadtxt(filename, save=True, stripe=True, blank=False):
     if blank:
         b = remove_blanks(b)
     if save:
-        np.savez('data.npz', b)
+        np.savez('.'.join((fn, '.npz')), a=b)
     else:
         return b
 
