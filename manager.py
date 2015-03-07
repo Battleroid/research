@@ -270,7 +270,8 @@ to remove empty (zero only) rows/cols from matrix before saving. Sample usage: f
         if not text:
             completions = [f for f in os.listdir('.')]
         else:
-            completions = [f for f in os.listdir('.') if f.startswith(text) and f.endswith('.txt')]
+            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.txt'))
+                           or f.endswith('.txt')]
         return completions
 
     def help_load(self):
@@ -296,7 +297,8 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         if not text:
             completions = [f for f in os.listdir('.')]
         else:
-            completions = [f for f in os.listdir('.') if f.startswith(text) and f.endswith('.npz')]
+            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.npz'))
+                           or f.endswith('.npz')]
         return completions
 
     def help_burn_database(self):
