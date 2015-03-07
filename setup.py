@@ -10,5 +10,5 @@ setup(
     description='',
     packages=['research'],
     scripts=['bin/manager.py'],
-    install_requires=['numpy', 'peewee']
+    install_requires=['numpy', 'peewee', 'texttable']
 )
