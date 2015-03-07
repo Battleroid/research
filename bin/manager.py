@@ -249,6 +249,11 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
         idx = int(line[0])
         view(idx)
 
+    def complete_view(self, text, line, begidx, endidx):
+        if not text:
+            completions = [i.id for i in File.select().where(File.processed == False).iterator()]
+            return completions
+
     def help_convert_text(self):
         print 'Convert text file with bitstrings to compressed Numpy archive (.npz) ready for splitting. Specify \'blank\' \
 to remove empty (zero only) rows/cols from matrix before saving. Sample usage: file.txt [blank].'
