@@ -142,11 +142,11 @@ class Manager(Cmd):
 
     NUMPY_LW = 80
     NUMPY_THRESHOLD = 80
-    VIEW_ONLY_LEAVES = False
-    SHAPE_THRESHOLD = 5
     Q_THRESHOLD = 0
-    SHOW_MENU_AFTER_CMD = False
+    SHAPE_THRESHOLD = 5
     GT_THAN_ZERO = True
+    SHOW_MENU_AFTER_CMD = False
+    VIEW_ONLY_LEAVES = False
 
     prompt = 'Manager> '
     ruler = '-'
