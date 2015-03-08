@@ -1,13 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.0.3'
-__intro__ = """
-    __  ___
-   /  |/  /___ _____  ____ _____ ____  _____
-  / /|_/ / __ `/ __ \/ __ `/ __ `/ _ \/ ___/
- / /  / / /_/ / / / / /_/ / /_/ /  __/ /
-/_/  /_/\__,_/_/ /_/\__,_/\__, /\___/_/
-                         /____/
-version %s""" % __version__
+__version__ = '1.0.2'
 
 from cmd import Cmd
 from texttable import Texttable
@@ -23,27 +15,27 @@ class AlreadyProcessed(Exception):
             self.message = 'Matrix already processed, cannot reprocess.'
         self.message = message
 
-def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
+def partition(idx, SHAPE_THRESHOLD=5, Q_THRESHOLD=0.0, GT_THAN_ZERO=True):
     try:
         parent = File.get(id=idx)
         if parent.processed:
             raise AlreadyProcessed
-        if shape_threshold >= parent.shape:
-            raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
+        if SHAPE_THRESHOLD >= parent.shape:
+            raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %dx%d.' % (SHAPE_THRESHOLD, SHAPE_THRESHOLD))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        if gt_than_zero:
-            if not f1.q > q_threshold or not f2.q > q_threshold:
-                raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %f.' % q_threshold)
+        if GT_THAN_ZERO:
+            if not f1.q > Q_THRESHOLD or not f2.q > Q_THRESHOLD:
+                raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         else:
-            if f1.q <= q_threshold or f2.q <= q_threshold:
-                raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %f.' % q_threshold)
+            if f1.q <= Q_THRESHOLD or f2.q <= Q_THRESHOLD:
+                raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %d.' % Q_THRESHOLD)
         File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
     except DoesNotExist:
-        print 'ID %i does not exist!' % idx
+        print 'ID %d does not exist!' % idx
     except AlreadyProcessed:
-        print 'Cannot split %i, it has already been processed.' % idx
+        print 'Cannot split %d, it has already been processed.' % idx
     except ZeroDivisionError:
         pass
     except master.CannotSplit, e:
@@ -53,7 +45,7 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
         parent.processed = True
         parent.save()
 
-def save_all(directory='results', leaves_only=True):
+def saveall(directory='results', leaves_only=True):
     if not os.path.exists(directory):
         os.mkdir(directory)
     if leaves_only:
@@ -68,15 +60,14 @@ def save_all(directory='results', leaves_only=True):
         q = data['q']
         a_elems = data['a_elems']
         shape = len(a_elems)
-        original_size = data['original_size']
         # change shape to something configurable
-        leafstring = np.zeros(original_size, dtype=np.int)
+        leafstring = np.zeros(376, dtype=np.int)
         for i in a_elems:
             leafstring[i] = 1
         leafstring_str = ''.join(map(str, leafstring))
         with open(os.path.join(directory, fn), 'w') as f:
             # header
-            f.write('# name: %s, total elements: %i, q: %.64f%s' % (key, shape, q, os.linesep))
+            f.write('# name: %s, total elements: %d, q: %.64f%s' % (key, shape, q, os.linesep))
             for idx, row in enumerate(a):
                 # bitstring
                 row_str = ''.join(map(str, row))
@@ -86,11 +77,11 @@ def save_all(directory='results', leaves_only=True):
             f.write('%s' % leafstring_str)
     print 'Finished'
 
-def partition_all(shape_threshold=5, q_threshold=0.0):
+def partitionall(SHAPE_THRESHOLD=5, Q_THRESHOLD=0.0):
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        [partition(z.id, shape_threshold, q_threshold) for z in File.select().where(File.processed == False).iterator()]
+        [partition(z.id, SHAPE_THRESHOLD, Q_THRESHOLD) for z in File.select().where(File.processed == False).iterator()]
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        return partition_all(shape_threshold, q_threshold)
+        return partitionall(SHAPE_THRESHOLD, Q_THRESHOLD)
     else:
         print 'Finished'
         return
@@ -153,9 +144,6 @@ def menu(leaves_only=False):
     table.add_rows(rows)
     table.set_cols_align(align)
     table.set_deco(Texttable.HEADER)
-    print '%i leaves of %i total records.' % (query.count() if leaves_only else
-                                              File.select().where(File.leaf == True).count(),
-                                              File.select().count())
     print table.draw()
 
 class Manager(Cmd):
@@ -205,13 +193,13 @@ Use toggle_leaves to toggle saving only the leaves of the tree.'
 
     def do_save_all(self, line):
         if not line:
-            save_all(leaves_only=self.VIEW_ONLY_LEAVES)
+            saveall(leaves_only=self.VIEW_ONLY_LEAVES)
             return
         line = line.split()
         directory = line[0]
         if not os.path.exists(directory):
             os.mkdir(directory)
-        save_all(directory, leaves_only=self.VIEW_ONLY_LEAVES)
+        saveall(directory, leaves_only=self.VIEW_ONLY_LEAVES)
 
     def help_set_q(self):
         print 'Set Q threshold. Current is %.8f.' % self.Q_THRESHOLD
@@ -314,7 +302,6 @@ to remove empty (zero only) rows/cols from matrix before saving. Sample usage: f
         if len(line) > 1:
             if line[1].lower() == 'blank':
                 blank = True
-                print 'Removing blank rows/cols.'
         master.loadtxt(target, blank=blank)
 
     def complete_convert_text(self, text, line, begidx, endidx):
@@ -368,7 +355,7 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         print 'Continuously split all records until all have been processed.'
 
     def do_split_all(self, line):
-        partition_all(self.SHAPE_THRESHOLD, self.Q_THRESHOLD)
+        partitionall(self.SHAPE_THRESHOLD, self.Q_THRESHOLD)
 
     def help_split(self):
         print 'Split record i, or a list of records using comma delimited list (ex: 1,3,4).'
@@ -414,12 +401,6 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         return self.do_exit(args)
 
     def do_exit(self, args):
-        if not File.select().count() and os.path.exists('files.db'):
-            print 'Database empty, removing database to avoid clutter.'
-            os.remove('files.db')
-        else:
-            print 'Database has records, will not be removing database.'
-        print 'Goodbye.'
         return True
 
     def preloop(self):
@@ -437,4 +418,4 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
             return True
 
 if __name__ == '__main__':
-    Manager().cmdloop(intro=__intro__)
+    Manager().cmdloop(intro='Manage the splitting of data.')
