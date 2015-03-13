@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -53,13 +53,14 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
         parent.processed = True
         parent.save()
 
-def save_all(directory='results', leaves_only=True):
+def save_all(directory='results', leaves_only=True, summary=False):
     if not os.path.exists(directory):
         os.mkdir(directory)
     if leaves_only:
         filenames = {f.filename: '.'.join((f.filename, f.ext)) for f in File.select().where(File.leaf == True).iterator()}
     else:
         filenames = {f.filename: '.'.join((f.filename, f.ext)) for f in File.select().where(File.processed == True).iterator()}
+    leaves = dict()
     for key, val in filenames.iteritems():
         fn = '.'.join((key, 'txt'))
         print 'Saving %s as %s' % (key, os.path.join(directory, fn))
@@ -74,16 +75,23 @@ def save_all(directory='results', leaves_only=True):
         for i in a_elems:
             leafstring[i] = 1
         leafstring_str = ''.join(map(str, leafstring))
+        leaves[key] = leafstring_str
         with open(os.path.join(directory, fn), 'w') as f:
             # header
-            f.write('# name: %s, total elements: %i, q: %.64f%s' % (key, shape, q, os.linesep))
+            f.write('# name: %s, total elements: %i, q: %.5f%s' % (key, shape, q, os.linesep))
             for idx, row in enumerate(a):
                 # bitstring
                 row_str = ''.join(map(str, row))
-                line = '%04d: %s%s' % (a_elems[idx], row_str, os.linesep)
+                line = '%04d: %s%s' % (a_elems[idx] + 1, row_str, os.linesep)  # increase elem num by 1 for readability
                 f.write(line)
             # leafstring
             f.write('%s' % leafstring_str)
+    if summary:
+        filename_padding = len(max(leaves.iterkeys(), key=len))  # is padding even necessary?
+        with open(os.path.join(directory, 'summary.txt'), 'w') as f:
+            for name, lfstr in leaves.iteritems():
+                f.write('%s: %s%s' % (name, lfstr, os.linesep))
+            print 'Leafstring summary included!'
     print 'Finished'
 
 def partition_all(shape_threshold=5, q_threshold=0.0):
@@ -204,14 +212,21 @@ class Manager(Cmd):
 Use toggle_leaves to toggle saving only the leaves of the tree.'
 
     def do_save_all(self, line):
+        if not File.select().count():
+            print 'Database empty, nothing to save, returning.'
+            return
         if not line:
             save_all(leaves_only=self.VIEW_ONLY_LEAVES)
             return
         line = line.split()
+        summary = False
         directory = line[0]
         if not os.path.exists(directory):
             os.mkdir(directory)
-        save_all(directory, leaves_only=self.VIEW_ONLY_LEAVES)
+        if len(line) > 1:
+            if line[1].lower() == 'summarize':
+                summary = True
+        save_all(directory, leaves_only=self.VIEW_ONLY_LEAVES, summary=summary)
 
     def help_set_q(self):
         print 'Set Q threshold. Current is %.8f.' % self.Q_THRESHOLD
