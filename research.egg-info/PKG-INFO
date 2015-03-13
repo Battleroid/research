@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: research
-Version: 1.0.4
+Version: 1.0.5
 Summary: Used to split data sets and sort according to eigenvectors/eigenvalues and other thresholds.
 Home-page: https://github.com/Battleroid/research
 Author: Casey Weed

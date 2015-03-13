@@ -9,3 +9,5 @@ dna
 *.swp
 *.npz
 *.npy
+build
+dist

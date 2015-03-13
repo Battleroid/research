@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -87,7 +87,6 @@ def save_all(directory='results', leaves_only=True, summary=False):
             # leafstring
             f.write('%s' % leafstring_str)
     if summary:
-        filename_padding = len(max(leaves.iterkeys(), key=len))  # is padding even necessary?
         with open(os.path.join(directory, 'summary.txt'), 'w') as f:
             for name, lfstr in leaves.iteritems():
                 f.write('%s: %s%s' % (name, lfstr, os.linesep))
@@ -209,7 +208,9 @@ class Manager(Cmd):
 
     def help_save_all(self):
         print 'Save all nodes to text files. Default directory is \'results\'. \
-Use toggle_leaves to toggle saving only the leaves of the tree.'
+Use toggle_leaves to toggle saving only the leaves of the tree. Use \
+\'summarize\' after directory name to indicate whether or not a brief summary \
+of the leafstrings should be written.'
 
     def do_save_all(self, line):
         if not File.select().count():
