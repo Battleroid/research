@@ -17,3 +17,12 @@ class File(Base):
     shape = IntegerField()
     q = DoubleField()
     leaf = BooleanField(default=False)
+
+class Node(Base):
+    id = PrimaryKeyField()
+    root = BooleanField(default=False)  # is this necessary? can't we just select the items who have no parents?
+    parent = ForeignKeyField('self', null=True, related_name='children')
+    name = CharField(unique=True, null=False)
+    shape = IntegerField()
+    q = DoubleField()
+    leaf = BooleanField(default=False)  # necessary as we want to record which are leaves according to File table

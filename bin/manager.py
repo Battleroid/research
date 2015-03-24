@@ -102,6 +102,12 @@ def partition_all(shape_threshold=5, q_threshold=0.0):
         print 'Finished'
         return
 
+def tree_summary():
+    pass
+
+def node_summary():
+    pass
+
 def view(idx):
     try:
         idx = int(idx)
