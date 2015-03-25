@@ -179,7 +179,7 @@ def create_table():
 
 def drop_tables():
     db.connect()
-    db.drop_tables(File)
+    db.drop_table(File)
 
 def reset_database():
     drop_tables()
