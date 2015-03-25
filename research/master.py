@@ -125,15 +125,17 @@ def split(filename, initial=False):
     if not g1_order or not g2_order:
         raise CannotSplit(message='One group is empty, cannot split.')
     if initial:
-        # first entries, so no need to return them and manipulate
+        # save files
         np.savez('g1.npz', a=g1, b=b1, q=q1, a_elems=a1_elems, original_size=ORIGINAL_SIZE)
         np.savez('g2.npz', a=g2, b=b2, q=q2, a_elems=a2_elems, original_size=ORIGINAL_SIZE)
+        # create File records
         files.File.create(filename='g1', ext=ext, q=q1, shape=g1.shape[0], a_elems=','.join([str(x) for x in a1_elems]))
         files.File.create(filename='g2', ext=ext, q=q2, shape=g2.shape[0], a_elems=','.join([str(x) for x in a2_elems]))
     else:
         # return to manager to set parents
         np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1, a_elems=a1_elems, original_size=ORIGINAL_SIZE)
         np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2, a_elems=a2_elems, original_size=ORIGINAL_SIZE)
+        # return so we can manipulate
         return Part(filename + ",1", ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
                Part(filename + ",2", ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 

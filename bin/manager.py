@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.0.5'
+__version__ = '1.1.5'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -26,20 +26,27 @@ class AlreadyProcessed(Exception):
 def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
     try:
         parent = File.get(id=idx)
+        # check processed
         if parent.processed:
             raise AlreadyProcessed
+        # check shape
         if shape_threshold >= parent.shape:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
+        # create records
+        z1 = File(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
+        z2 = File(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
+        # check q
         if gt_than_zero:
             if not f1.q > q_threshold or not f2.q > q_threshold:
                 raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %f.' % q_threshold)
         else:
             if f1.q <= q_threshold or f2.q <= q_threshold:
                 raise master.CannotSplit(message='Matrix cannot be split, exceeds Q threshold of %f.' % q_threshold)
-        File.create(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
-        File.create(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
+        # save file records
+        z1.save()
+        z2.save()
     except DoesNotExist:
         print 'ID %i does not exist!' % idx
     except AlreadyProcessed:
@@ -101,6 +108,44 @@ def partition_all(shape_threshold=5, q_threshold=0.0):
     else:
         print 'Finished'
         return
+
+def tree_summary(filename='summary'):
+    query = File.select().where(File.parent == None).iterator()
+    with open('.'.join((filename, 'txt')), 'w') as f:
+        for idx, root in enumerate(query):
+            if idx:
+                f.write(os.linesep)
+            node_summary(root, f)
+    print 'Finished'
+
+def node_summary(node, f):
+    # create primitive string for indent to show structure
+    indent = get_indent(node) * 2
+    ind_str = ''
+    for i in range(indent):
+        if i % 2 == 0:
+            ind_str += '|'
+        else:
+            ind_str += '-'
+    # create info text
+    info = '%s (shape=%i, q=%.5f)' % (node.filename, node.shape, node.q)
+    # indicate whether or not it is a leaf or has children (:)
+    if node.leaf:
+        info += ' is leaf'
+    else:
+        info += ':'
+    line = ''.join((ind_str, info))
+    f.write(''.join((line, os.linesep)))
+    # if the node has children, repeat the process on each child
+    if node.children:
+        for child in node.children:
+            node_summary(child, f)
+
+def get_indent(node, level=0):
+    if node.parent:
+        level += 1
+        return get_indent(node.parent, level)
+    return level
 
 def view(idx):
     try:
@@ -177,6 +222,21 @@ class Manager(Cmd):
 
     prompt = 'Manager> '
     ruler = '-'
+
+    def do_tree_summary(self, line):
+        if not File.select().count():
+            print 'Database empty, nothing to summarize.'
+            return
+        line = line.split()
+        if line:
+            filename = line[0]
+            tree_summary(filename)
+        else:
+            tree_summary()
+
+    def help_tree_summary(self):
+        print 'Create tree summary of database contents, complete with \
+indentation and info on the record.'
 
     def _set_numpy(self, val):
         np.set_printoptions(threshold=val)
