@@ -131,6 +131,9 @@ def split(filename, initial=False):
         # create File records
         files.File.create(filename='g1', ext=ext, q=q1, shape=g1.shape[0], a_elems=','.join([str(x) for x in a1_elems]))
         files.File.create(filename='g2', ext=ext, q=q2, shape=g2.shape[0], a_elems=','.join([str(x) for x in a2_elems]))
+        # create Item records for burning
+        files.Item.create(filename='.'.join(('g1', ext)))
+        files.Item.create(filename='.'.join(('g2', ext)))
     else:
         # return to manager to set parents
         np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1, a_elems=a1_elems, original_size=ORIGINAL_SIZE)

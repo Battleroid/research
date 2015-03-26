@@ -14,7 +14,7 @@ from texttable import Texttable
 import numpy as np
 import os
 from peewee import DoesNotExist
-from research.files import File, database as db
+from research.files import File, Item, database as db
 from research import master
 
 class AlreadyProcessed(Exception):
@@ -34,6 +34,9 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
+        # save filenames for burn regardless if saved or not
+        Item.create(filename='.'.join((f1.filename, f1.ext)))
+        Item.create(filename='.'.join((f2.filename, f2.ext)))
         # create records
         z1 = File(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         z2 = File(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
@@ -162,24 +165,24 @@ def view(idx):
         print 'No parent could be found (possible that this is the master split).'
 
 def burn():
-    file_list = ['.'.join((i.filename, i.ext)) for i in File.select()]
+    file_list = Item.select().iterator()
     if not file_list:
         print 'Database empty, skipping.'
         return 
     for f in file_list:
-        if os.path.exists(f):
-            print 'Removing %s' % f
-            os.remove(f)
+        if os.path.exists(f.filename):
+            print 'Removing %s' % f.filename
+            os.remove(f.filename)
     print 'Resetting database.'
     reset_database()
 
 def create_table():
     db.connect()
-    db.create_table(File)
+    db.create_tables([File, Item])
 
 def drop_tables():
     db.connect()
-    db.drop_table(File)
+    db.drop_tables([File, Item])
 
 def reset_database():
     drop_tables()
@@ -397,8 +400,7 @@ to remove empty (zero only) rows/cols from matrix before saving. Sample usage: f
         if not text:
             completions = [f for f in os.listdir('.')]
         else:
-            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.txt'))
-                           or f.endswith('.txt')]
+            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.txt'))]
         return completions
 
     def help_load(self):
@@ -418,14 +420,16 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         if len(line) > 1:
             if line[1].lower() == 'yes':
                 initial = True
+        if not File.select().count():
+            print 'No records in database, assuming first split.'
+            initial = True
         master.split(target, initial=initial)
 
     def complete_load(self, text, line, begidx, endidx):
         if not text:
             completions = [f for f in os.listdir('.')]
         else:
-            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.npz'))
-                           or f.endswith('.npz')]
+            completions = [f for f in os.listdir('.') if (f.startswith(text) and f.endswith('.npz'))]
         return completions
 
     def help_burn_database(self):
@@ -444,12 +448,18 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         print 'Continuously split all records until all have been processed.'
 
     def do_split_all(self, line):
+        if not File.select().count():
+            print 'No records in database, canceling.'
+            return
         partition_all(self.SHAPE_THRESHOLD, self.Q_THRESHOLD)
 
     def help_split(self):
         print 'Split record i, or a list of records using comma delimited list (ex: 1,3,4).'
 
     def do_split(self, line):
+        if not File.select().count():
+            print 'No records in database, canceling.'
+            return
         if not line:
             print 'Missing arguments.'
             return
