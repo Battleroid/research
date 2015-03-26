@@ -34,9 +34,6 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        # save filenames for burn regardless if saved or not
-        Item.create(filename='.'.join((f1.filename, f1.ext)))
-        Item.create(filename='.'.join((f2.filename, f2.ext)))
         # create records
         z1 = File(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         z2 = File(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
@@ -97,10 +94,8 @@ def save_all(directory='results', leaves_only=True, summary=False):
             # leafstring
             f.write('%s' % leafstring_str)
     if summary:
-        with open(os.path.join(directory, 'summary.txt'), 'w') as f:
-            for name, lfstr in leaves.iteritems():
-                f.write('%s: %s%s' % (name, lfstr, os.linesep))
-            print 'Leafstring summary included!'
+        tree_summary(os.path.join(directory, 'summary.txt'))
+        print 'Leafstring summary included!'
     print 'Finished'
 
 def partition_all(shape_threshold=5, q_threshold=0.0):
@@ -112,16 +107,16 @@ def partition_all(shape_threshold=5, q_threshold=0.0):
         print 'Finished'
         return
 
-def tree_summary(filename='summary'):
+def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     query = File.select().where(File.parent == None).iterator()
-    with open('.'.join((filename, 'txt')), 'w') as f:
+    with open(filename, 'w') as f:
         for idx, root in enumerate(query):
             if idx:
                 f.write(os.linesep)
-            node_summary(root, f)
+            node_summary(root, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
     print 'Finished'
 
-def node_summary(node, f):
+def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     # create primitive string for indent to show structure
     indent = get_indent(node) * 2
     ind_str = ''
@@ -137,12 +132,25 @@ def node_summary(node, f):
         info += ' is leaf'
     else:
         info += ':'
+    # obtain why it is a leaf (if it is) by performing a temporary split?
+    if node.leaf:
+        a, b = master.split('.'.join((node.filename, node.ext)))  # way for matrix too small
+        if GT_THAN_ZERO:
+            a_q = 'A Exceeds Q>0' if not a.q > Q_THRESHOLD else None
+            b_q = 'B Exceeds Q>0' if not b.q > Q_THRESHOLD else None
+        else:
+            a_q = 'A Exceeds Q<=0' if a.q <= Q_THRESHOLD else None
+            b_q = 'B Exceeds Q<=0' if b.q <= Q_THRESHOLD else None
+        a_shape = 'A Exceeds Shape' if a.shape < SHAPE_THRESHOLD else None
+        b_shape = 'B Exceeds Shape' if b.shape < SHAPE_THRESHOLD else None
+        print a_q, b_q, a_shape, b_shape
+    # write line
     line = ''.join((ind_str, info))
     f.write(''.join((line, os.linesep)))
     # if the node has children, repeat the process on each child
     if node.children:
         for child in node.children:
-            node_summary(child, f)
+            node_summary(child, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
 
 def get_indent(node, level=0):
     if node.parent:
@@ -233,9 +241,9 @@ class Manager(Cmd):
         line = line.split()
         if line:
             filename = line[0]
-            tree_summary(filename)
+            tree_summary(filename, self.Q_THRESHOLD, self.SHAPE_THRESHOLD, self.GT_THAN_ZERO)
         else:
-            tree_summary()
+            tree_summary('summary.txt', Q_THRESHOLD=self.Q_THRESHOLD, SHAPE_THRESHOLD=self.SHAPE_THRESHOLD, GT_THAN_ZERO=self.GT_THAN_ZERO)
 
     def help_tree_summary(self):
         print 'Create tree summary of database contents, complete with \

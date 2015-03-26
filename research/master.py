@@ -75,6 +75,22 @@ def create_b_of_g(b, order):
             n_b_of_g[i][j] = n_b[i][j] - same * (row.sum())
     return n_b_of_g
 
+def temp_split(filename):
+    '''Does not save data, only splits information and returns it for checking elsewhere. Useful for debugging. Not for initial split use.'''
+    filename, ext = filename.rsplit('.')
+    data = np.load(filename + "." + ext)
+    # define basic constants from parent
+    A = data['a']
+    A_SIZE = A.shape[0]
+    A_SHAPE = A.shape
+    ORIGINAL_SIZE = data['original_size']
+    B = data['b']
+    # only exception to the rule; if 1 or below, we can't split anyway, no point in continuing just to get nasty
+    # error messages and ruin all our fun
+    if A_SIZE <= 1:
+        return 'Shape too small! (%ix%i)' % (A_SIZE, A_SIZE)
+    # finish me pls, done for now
+
 def split(filename, initial=False):
     # load data
     filename, ext = filename.rsplit('.')
@@ -138,9 +154,12 @@ def split(filename, initial=False):
         # return to manager to set parents
         np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1, a_elems=a1_elems, original_size=ORIGINAL_SIZE)
         np.savez(filename + ",2" + "." + ext, a=g2, b=b2, q=q2, a_elems=a2_elems, original_size=ORIGINAL_SIZE)
+        # save filenames for burn regardless if saved or not, why didn't I do this before in master?
+        files.Item.create(filename=filename + ',2.' + ext)
+        files.Item.create(filename=filename + ',1.' + ext)
         # return so we can manipulate
-        return Part(filename + ",1", ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
-               Part(filename + ",2", ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
+        return Part(filename + ',1', ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
+               Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def loadtxt(filename, save=True, stripe=True, blank=False):
     a = []
