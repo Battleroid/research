@@ -17,3 +17,6 @@ class File(Base):
     shape = IntegerField()
     q = DoubleField()
     leaf = BooleanField(default=False)
+
+class Item(Base):
+    filename = CharField(unique=True, null=False)
