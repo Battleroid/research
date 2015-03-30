@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.2'
+__version__ = '1.2.1'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -171,8 +171,8 @@ def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
             if tmp_g2 <= Q_THRESHOLD:
                 reasons.g2.append('Q exceeds threshold')
         # set info lines
-        tmp_g1_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g1.filename, tmp_g1.shape, tmp_g1.q, 'not saved due to:' if reasons.g1 else 'not saved due to %s' % tmp_g2.filename, ', '.join(reasons.g1))
-        tmp_g2_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g2.filename, tmp_g2.shape, tmp_g2.q, 'not saved due to:' if reasons.g2 else 'not saved due to %s' % tmp_g1.filename, ', '.join(reasons.g2))
+        tmp_g1_info = ind_str + 'X-%s (shape=%i, q=%.5f) %s %s' % (tmp_g1.filename, tmp_g1.shape, tmp_g1.q, 'not saved due to:' if reasons.g1 else 'not saved due to %s' % tmp_g2.filename, ', '.join(reasons.g1))
+        tmp_g2_info = ind_str + 'X-%s (shape=%i, q=%.5f) %s %s' % (tmp_g2.filename, tmp_g2.shape, tmp_g2.q, 'not saved due to:' if reasons.g2 else 'not saved due to %s' % tmp_g1.filename, ', '.join(reasons.g2))
         # set parent if it has anything to add (which is just the shape)
         if reasons.parent:
             info += ' not split due to: %s' % ', '.join(reasons.parent)  # is this needed?

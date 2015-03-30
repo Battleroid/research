@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='research',
-    version='1.2',
+    version='1.2.1',
     url='https://github.com/Battleroid/research',
     license='',
     author='Casey Weed',
