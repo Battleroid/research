@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.1.5'
+__version__ = '1.2'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -34,9 +34,6 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
         print 'Splitting %s' % parent.filename
         f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
-        # save filenames for burn regardless if saved or not
-        Item.create(filename='.'.join((f1.filename, f1.ext)))
-        Item.create(filename='.'.join((f2.filename, f2.ext)))
         # create records
         z1 = File(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         z2 = File(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
@@ -97,10 +94,8 @@ def save_all(directory='results', leaves_only=True, summary=False):
             # leafstring
             f.write('%s' % leafstring_str)
     if summary:
-        with open(os.path.join(directory, 'summary.txt'), 'w') as f:
-            for name, lfstr in leaves.iteritems():
-                f.write('%s: %s%s' % (name, lfstr, os.linesep))
-            print 'Leafstring summary included!'
+        tree_summary(os.path.join(directory, 'summary.txt'))
+        print 'Leafstring summary included!'
     print 'Finished'
 
 def partition_all(shape_threshold=5, q_threshold=0.0):
@@ -112,16 +107,23 @@ def partition_all(shape_threshold=5, q_threshold=0.0):
         print 'Finished'
         return
 
-def tree_summary(filename='summary'):
+def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     query = File.select().where(File.parent == None).iterator()
-    with open('.'.join((filename, 'txt')), 'w') as f:
+    with open(filename, 'w') as f:
         for idx, root in enumerate(query):
             if idx:
                 f.write(os.linesep)
-            node_summary(root, f)
+            node_summary(root, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
     print 'Finished'
 
-def node_summary(node, f):
+class Reason(object):
+    '''Contain the reasons why, probably unnecessary. Please come back and fix someday.'''
+    def __init__(self):
+        self.parent = []
+        self.g1 = []
+        self.g2 = []
+
+def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     # create primitive string for indent to show structure
     indent = get_indent(node) * 2
     ind_str = ''
@@ -132,17 +134,61 @@ def node_summary(node, f):
             ind_str += '-'
     # create info text
     info = '%s (shape=%i, q=%.5f)' % (node.filename, node.shape, node.q)
+    tmp_g1_info = ''
+    tmp_g2_info = ''
     # indicate whether or not it is a leaf or has children (:)
     if node.leaf:
         info += ' is leaf'
     else:
         info += ':'
-    line = ''.join((ind_str, info))
-    f.write(''.join((line, os.linesep)))
+    # let's just get the info, at this point I just want it to work, some other day I can come back and fix it up nice
+    # and neat
+    if node.leaf:
+        # get reasons for why the leaf is a leaf
+        reasons = Reason()
+        # parent reasons
+        if node.shape <= SHAPE_THRESHOLD:
+            reasons.parent.append('Shape exceeds threshold.')
+        # tmp g1/g2 temp split, not saved, just gives me the stats of each split, don't even care
+        # about if the shape is too small or q too small, it doesn't matter, we're not saving it
+        tmp_g1, tmp_g2 = master.temp_split('.'.join((node.filename, node.ext)))
+        # tmp g1 shape & q checks
+        if tmp_g1.shape <= SHAPE_THRESHOLD:
+            reasons.g1.append('Shape exceeds threshold')
+        if GT_THAN_ZERO:
+            if not tmp_g1.q > Q_THRESHOLD:
+                reasons.g1.append('Q exceeds threshold')
+        else:
+            if tmp_g1 <= Q_THRESHOLD:
+                reasons.g1.append('Q exceeds threshold')
+        # tmp g2 shape & q checks
+        if tmp_g2.shape <= SHAPE_THRESHOLD:
+            reasons.g2.append('Shape exceeds threshold')
+        if GT_THAN_ZERO:
+            if not tmp_g2.q > Q_THRESHOLD:
+                reasons.g2.append('Q exceeds threshold')
+        else:
+            if tmp_g2 <= Q_THRESHOLD:
+                reasons.g2.append('Q exceeds threshold')
+        # set info lines
+        tmp_g1_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g1.filename, tmp_g1.shape, tmp_g1.q, 'not saved due to:' if reasons.g1 else 'not saved due to %s' % tmp_g2.filename, ', '.join(reasons.g1))
+        tmp_g2_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g2.filename, tmp_g2.shape, tmp_g2.q, 'not saved due to:' if reasons.g2 else 'not saved due to %s' % tmp_g1.filename, ', '.join(reasons.g2))
+        # set parent if it has anything to add (which is just the shape)
+        if reasons.parent:
+            info += ' not split due to: %s' % ', '.join(reasons.parent)  # is this needed?
+    # write line
+    if node.leaf:
+        # write line and the additional tmp split info
+        line = ''.join((ind_str, info, os.linesep, tmp_g1_info, os.linesep, tmp_g2_info))
+        f.write(''.join((line, os.linesep)))
+    else:
+        # only write line info
+        line = ''.join((ind_str, info))
+        f.write(''.join((line, os.linesep)))
     # if the node has children, repeat the process on each child
     if node.children:
         for child in node.children:
-            node_summary(child, f)
+            node_summary(child, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
 
 def get_indent(node, level=0):
     if node.parent:
@@ -233,9 +279,9 @@ class Manager(Cmd):
         line = line.split()
         if line:
             filename = line[0]
-            tree_summary(filename)
+            tree_summary(filename, self.Q_THRESHOLD, self.SHAPE_THRESHOLD, self.GT_THAN_ZERO)
         else:
-            tree_summary()
+            tree_summary('summary.txt', Q_THRESHOLD=self.Q_THRESHOLD, SHAPE_THRESHOLD=self.SHAPE_THRESHOLD, GT_THAN_ZERO=self.GT_THAN_ZERO)
 
     def help_tree_summary(self):
         print 'Create tree summary of database contents, complete with \
