@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.1.5'
+__version__ = '1.2'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -116,6 +116,13 @@ def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
             node_summary(root, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
     print 'Finished'
 
+class Reason(object):
+    '''Contain the reasons why, probably unnecessary. Please come back and fix someday.'''
+    def __init__(self):
+        self.parent = []
+        self.g1 = []
+        self.g2 = []
+
 def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     # create primitive string for indent to show structure
     indent = get_indent(node) * 2
@@ -127,26 +134,57 @@ def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
             ind_str += '-'
     # create info text
     info = '%s (shape=%i, q=%.5f)' % (node.filename, node.shape, node.q)
+    tmp_g1_info = ''
+    tmp_g2_info = ''
     # indicate whether or not it is a leaf or has children (:)
     if node.leaf:
         info += ' is leaf'
     else:
         info += ':'
-    # obtain why it is a leaf (if it is) by performing a temporary split?
+    # let's just get the info, at this point I just want it to work, some other day I can come back and fix it up nice
+    # and neat
     if node.leaf:
-        a, b = master.split('.'.join((node.filename, node.ext)))  # way for matrix too small
+        # get reasons for why the leaf is a leaf
+        reasons = Reason()
+        # parent reasons
+        if node.shape <= SHAPE_THRESHOLD:
+            reasons.parent.append('Shape exceeds threshold.')
+        # tmp g1/g2 temp split, not saved, just gives me the stats of each split, don't even care
+        # about if the shape is too small or q too small, it doesn't matter, we're not saving it
+        tmp_g1, tmp_g2 = master.temp_split('.'.join((node.filename, node.ext)))
+        # tmp g1 shape & q checks
+        if tmp_g1.shape <= SHAPE_THRESHOLD:
+            reasons.g1.append('Shape exceeds threshold')
         if GT_THAN_ZERO:
-            a_q = 'A Exceeds Q>0' if not a.q > Q_THRESHOLD else None
-            b_q = 'B Exceeds Q>0' if not b.q > Q_THRESHOLD else None
+            if not tmp_g1.q > Q_THRESHOLD:
+                reasons.g1.append('Q exceeds threshold')
         else:
-            a_q = 'A Exceeds Q<=0' if a.q <= Q_THRESHOLD else None
-            b_q = 'B Exceeds Q<=0' if b.q <= Q_THRESHOLD else None
-        a_shape = 'A Exceeds Shape' if a.shape < SHAPE_THRESHOLD else None
-        b_shape = 'B Exceeds Shape' if b.shape < SHAPE_THRESHOLD else None
-        print a_q, b_q, a_shape, b_shape
+            if tmp_g1 <= Q_THRESHOLD:
+                reasons.g1.append('Q exceeds threshold')
+        # tmp g2 shape & q checks
+        if tmp_g2.shape <= SHAPE_THRESHOLD:
+            reasons.g2.append('Shape exceeds threshold')
+        if GT_THAN_ZERO:
+            if not tmp_g2.q > Q_THRESHOLD:
+                reasons.g2.append('Q exceeds threshold')
+        else:
+            if tmp_g2 <= Q_THRESHOLD:
+                reasons.g2.append('Q exceeds threshold')
+        # set info lines
+        tmp_g1_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g1.filename, tmp_g1.shape, tmp_g1.q, 'not saved due to:' if reasons.g1 else 'not saved due to %s' % tmp_g2.filename, ', '.join(reasons.g1))
+        tmp_g2_info = ind_str + '|-%s (shape=%i, q=%.5f) %s %s' % (tmp_g2.filename, tmp_g2.shape, tmp_g2.q, 'not saved due to:' if reasons.g2 else 'not saved due to %s' % tmp_g1.filename, ', '.join(reasons.g2))
+        # set parent if it has anything to add (which is just the shape)
+        if reasons.parent:
+            info += ' not split due to: %s' % ', '.join(reasons.parent)  # is this needed?
     # write line
-    line = ''.join((ind_str, info))
-    f.write(''.join((line, os.linesep)))
+    if node.leaf:
+        # write line and the additional tmp split info
+        line = ''.join((ind_str, info, os.linesep, tmp_g1_info, os.linesep, tmp_g2_info))
+        f.write(''.join((line, os.linesep)))
+    else:
+        # only write line info
+        line = ''.join((ind_str, info))
+        f.write(''.join((line, os.linesep)))
     # if the node has children, repeat the process on each child
     if node.children:
         for child in node.children:

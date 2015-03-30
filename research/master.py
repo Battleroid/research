@@ -85,11 +85,29 @@ def temp_split(filename):
     A_SHAPE = A.shape
     ORIGINAL_SIZE = data['original_size']
     B = data['b']
-    # only exception to the rule; if 1 or below, we can't split anyway, no point in continuing just to get nasty
-    # error messages and ruin all our fun
-    if A_SIZE <= 1:
-        return 'Shape too small! (%ix%i)' % (A_SIZE, A_SIZE)
-    # finish me pls, done for now
+    # basics
+    ki, kj, m = np.sum(A, 1), np.sum(A, 0), np.sum(np.sum(A, 1))
+    # eval & evec
+    eval, evec = linalg.eigh(B)
+    # split
+    g1_order, g1_arrays, g2_order, g2_arrays = create_g(A, evec)
+    g1, g2 = create_g_matrix(g1_order, g1_arrays), create_g_matrix(g2_order, g2_arrays)
+    # threshold (q)
+    q1 = create_q(A_SIZE, B, g1_order, m)
+    q2 = create_q(A_SIZE, B, g2_order, m)
+    # B of G
+    b1 = create_b_of_g(B, g1_order)
+    b2 = create_b_of_g(B, g2_order)
+    # a_elems
+    a1_elems = []
+    a2_elems = []
+    original_elems = data['a_elems']
+    for i in g1_order:
+        a1_elems.append(original_elems[i])
+    for i in g2_order:
+        a2_elems.append(original_elems[i])
+    return Part(filename + ',1', ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
+           Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def split(filename, initial=False):
     # load data
