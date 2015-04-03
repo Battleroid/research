@@ -9,5 +9,9 @@ dna
 *.swp
 *.npz
 *.npy
-build
-dist
+build/
+dist/
+develop-eggs
+eggs
+*.egg-info/
+*.egg
