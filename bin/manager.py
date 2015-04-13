@@ -1,5 +1,5 @@
 __author__ = 'Casey Weed'
-__version__ = '1.2.1'
+__version__ = '1.3'
 __intro__ = """
     __  ___
    /  |/  /___ _____  ____ _____ ____  _____
@@ -23,7 +23,7 @@ class AlreadyProcessed(Exception):
             self.message = 'Matrix already processed, cannot reprocess.'
         self.message = message
 
-def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
+def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimize=False):
     try:
         parent = File.get(id=idx)
         # check processed
@@ -33,7 +33,7 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True):
         if shape_threshold >= parent.shape:
             raise master.CannotSplit(message='Matrix cannot be split, exceeds threshold of %ix%i.' % (shape_threshold, shape_threshold))
         print 'Splitting %s' % parent.filename
-        f1, f2 = master.split('.'.join((parent.filename, parent.ext)))
+        f1, f2 = master.split('.'.join((parent.filename, parent.ext)), optimize=optimize)
         # create records
         z1 = File(parent=parent.id, filename=f1.filename, ext=f1.ext, q=f1.q, shape=f1.shape, a_elems=f1.a_elems)
         z2 = File(parent=parent.id, filename=f2.filename, ext=f2.ext, q=f2.q, shape=f2.shape, a_elems=f2.a_elems)
@@ -98,11 +98,11 @@ def save_all(directory='results', leaves_only=True, summary=False):
         print 'Leafstring summary included!'
     print 'Finished'
 
-def partition_all(shape_threshold=5, q_threshold=0.0):
+def partition_all(shape_threshold=5, q_threshold=0.0, optimize=False):
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        [partition(z.id, shape_threshold, q_threshold) for z in File.select().where(File.processed == False).iterator()]
+        [partition(z.id, shape_threshold, q_threshold, optimize) for z in File.select().where(File.processed == False).iterator()]
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        return partition_all(shape_threshold, q_threshold)
+        return partition_all(shape_threshold, q_threshold, optimize)
     else:
         print 'Finished'
         return
@@ -214,7 +214,7 @@ def burn():
     file_list = Item.select().iterator()
     if not file_list:
         print 'Database empty, skipping.'
-        return 
+        return
     for f in file_list:
         if os.path.exists(f.filename):
             print 'Removing %s' % f.filename
@@ -268,9 +268,17 @@ class Manager(Cmd):
     GT_THAN_ZERO = True
     SHOW_MENU_AFTER_CMD = False
     VIEW_ONLY_LEAVES = False
+    OPTIMIZE = False
 
     prompt = 'Manager> '
     ruler = '-'
+
+    def help_toggle_optimize(self):
+        print 'Toggles optimization of groups on split by moving element from group 1 to group 2. For now only toggles displaying of optimization table on first split.'
+
+    def do_toggle_optimize(self, line):
+        self.OPTIMIZE = not self.OPTIMIZE
+        print 'Optimize is now toggled %s.' % ('off' if not self.OPTIMIZE else 'on')
 
     def do_tree_summary(self, line):
         if not File.select().count():
@@ -306,7 +314,8 @@ indentation and info on the record.'
             ['Shape Threshold', self.SHAPE_THRESHOLD],
             ['Q Check', '>' if self.GT_THAN_ZERO else '<='],
             ['Show Menu Post Cmd?', 'Yes' if self.SHOW_MENU_AFTER_CMD else 'No'],
-            ['Leaves Only Mode?', 'Yes' if self.VIEW_ONLY_LEAVES else 'No']
+            ['Leaves Only Mode?', 'Yes' if self.VIEW_ONLY_LEAVES else 'No'],
+            ['Optimize Groups', 'Yes' if self.OPTIMIZE else 'No']
         ]
         rows.sort()
         rows.insert(0, headers)
@@ -469,7 +478,14 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         if not File.select().count():
             print 'No records in database, assuming first split.'
             initial = True
-        master.split(target, initial=initial)
+        opt_table = master.split(target, initial=initial, optimize=self.OPTIMIZE)
+        if self.OPTIMIZE:
+            table = Texttable()
+            headers = ('Element', 'Q1', 'Q2')
+            opt_table.insert(0, headers)
+            table.add_rows(opt_table)
+            table.set_deco(Texttable.HEADER | Texttable.VLINES)
+            print table.draw()
 
     def complete_load(self, text, line, begidx, endidx):
         if not text:
@@ -497,7 +513,7 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
         if not File.select().count():
             print 'No records in database, canceling.'
             return
-        partition_all(self.SHAPE_THRESHOLD, self.Q_THRESHOLD)
+        partition_all(self.SHAPE_THRESHOLD, self.Q_THRESHOLD, optimize=self.OPTIMIZE)
 
     def help_split(self):
         print 'Split record i, or a list of records using comma delimited list (ex: 1,3,4).'
@@ -511,7 +527,7 @@ use \'yes\' to do initial split. Sample usage: file.npz [yes].'
             return
         try:
             idxs = [int(i) for i in line.split(',')]
-            [partition(i, self.SHAPE_THRESHOLD, self.Q_THRESHOLD) for i in idxs]
+            [partition(i, self.SHAPE_THRESHOLD, self.Q_THRESHOLD, optimize=self.OPTIMIZE) for i in idxs]
         except ValueError:
             print 'Invalid arguments.'
 

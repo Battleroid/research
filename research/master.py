@@ -109,7 +109,7 @@ def temp_split(filename):
     return Part(filename + ',1', ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
            Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
-def split(filename, initial=False):
+def split(filename, initial=False, optimize=False):
     # load data
     filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
@@ -168,6 +168,21 @@ def split(filename, initial=False):
         # create Item records for burning
         files.Item.create(filename='.'.join(('g1', ext)))
         files.Item.create(filename='.'.join(('g2', ext)))
+        if optimize:
+            opt_table = []
+            for idx, elem in enumerate(g1_order):
+                # create copies of new arrays
+                new_g1_order, new_g1_arrays, new_g2_order, new_g2_arrays = g1_order[:], g1_arrays[:], g2_order[:], g2_arrays[:]
+                # first append new material to other array
+                new_g2_order.append(elem)  # TODO: check if need to be sorted
+                new_g2_arrays.append(new_g1_arrays[idx])  # TODO: check if insert instead if size g2 size is >= g1 size?
+                # delete material from new_g1_*
+                del new_g1_order[idx]
+                del new_g1_arrays[idx]
+                # create new Qs
+                new_q1, new_q2 = create_q(A_SIZE, B, new_g1_order, m), create_q(A_SIZE, B, new_g2_order, m)
+                opt_table.append((elem, new_q1, new_q2))
+            return sorted(opt_table, key=lambda x: x[0])
     else:
         # return to manager to set parents
         np.savez(filename + ",1" + "." + ext, a=g1, b=b1, q=q1, a_elems=a1_elems, original_size=ORIGINAL_SIZE)
@@ -177,7 +192,7 @@ def split(filename, initial=False):
         files.Item.create(filename=filename + ',1.' + ext)
         # return so we can manipulate
         return Part(filename + ',1', ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
-               Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
+                Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def loadtxt(filename, save=True, stripe=True, blank=False):
     a = []
