@@ -4,12 +4,18 @@ import sys
 import files
 
 class CannotSplit(Exception):
+    """
+    Used to indicate you cannot split the matrix due to size constraints.
+    """
     def __init__(self, message=None):
         if not message:
             message = 'Cannot split, matrix too small.'
         self.message = message
 
 class Part(object):
+    """
+    Object used as proxy to pass named information to manager.
+    """
     def __init__(self, filename, ext, q, shape, a_elems):
         self.filename = filename
         self.ext = ext
@@ -18,6 +24,14 @@ class Part(object):
         self.a_elems = a_elems
 
 def create_p1(shape, ki, kj):
+    """
+    Creates intermediate step p1 using information from parent group.
+
+    :param shape:
+    :param ki:
+    :param kj:
+    :return: returns matrix p1
+    """
     a = np.zeros(shape, dtype=np.int)
     for i, row in enumerate(a):
         for j, col in enumerate(row):
@@ -25,6 +39,13 @@ def create_p1(shape, ki, kj):
     return a
 
 def create_p(p1, m):
+    """
+    Creates intermediate step p.
+
+    :param p1:
+    :param m:
+    :return: return matrix p
+    """
     shape = p1.shape
     a = np.zeros(shape, dtype=np.float64)
     for i, row in enumerate(a):
@@ -36,6 +57,14 @@ def create_p(p1, m):
     return a
 
 def create_g(a, evec):
+    """
+    Sort elements and corresponding rows to g1 or g2 based on whether or not the first eigenvector of the row is
+    positive or negative.
+
+    :param a: parent matrix
+    :param evec: set of eigenvectors for matrix a
+    :return: both sets of order and arrays (g1, g2)
+    """
     g1_order, g2_order = [], []
     g1_arrays, g2_arrays = [], []
     for idx, row in enumerate(a):
@@ -48,6 +77,13 @@ def create_g(a, evec):
     return g1_order, g1_arrays, g2_order, g2_arrays
 
 def create_g_matrix(order, arrays):
+    """
+    Given a set of element numbers and rows, build a new group.
+
+    :param order: row elements
+    :param arrays: rows for elements
+    :return: returns new matrix G assembled from order and arrays
+    """
     size = len(order)
     g = np.zeros((size, size), dtype=np.int)
     for i, row in enumerate(g):
@@ -56,6 +92,15 @@ def create_g_matrix(order, arrays):
     return g
 
 def create_q(size, b, order, m):
+    """
+    Retrieve Q value from given order of elements and information from parent matrix.
+
+    :param size: size from parent matrix
+    :param b: B matrix from parent matrix
+    :param order: order of elements from grouping (g1, g2)
+    :param m: m from parent matrix
+    :return: first element of resulting matrix which is our Q value
+    """
     s = np.matrix(np.zeros(size))
     for i in order:
         s[0,i] = 1
@@ -64,6 +109,13 @@ def create_q(size, b, order, m):
     return a.item(0)
 
 def create_b_of_g(b, order):
+    """
+    Create new B of a grouping.
+
+    :param b: B from parent matrix
+    :param order: ordering of elements from grouping
+    :return: returns B matrix for grouping
+    """
     n_b = np.zeros((len(order), len(order)))
     for i, row in enumerate(n_b):
         for j, col in enumerate(row):
@@ -76,7 +128,13 @@ def create_b_of_g(b, order):
     return n_b_of_g
 
 def temp_split(filename):
-    '''Does not save data, only splits information and returns it for checking elsewhere. Useful for debugging. Not for initial split use.'''
+    """
+    Splits information on a temporary basis for debugging. Used for node/tree summary. Does not perform checks present
+    in normal split method.
+
+    :param filename:
+    :return: returns two Part objects containing information for debugging
+    """
     filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
     # define basic constants from parent
@@ -110,6 +168,16 @@ def temp_split(filename):
            Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def split(filename, initial=False, optimize=False):
+    """
+    Split the parent matrix into two separate groupings. Can be used for the initial split (master matrix) or subsequent
+    groupings.
+
+    :param filename:
+    :param initial: True to perform duties for initial split, default is False (boolean)
+    :param optimize: (currently) gather information on optimization results, default is True (boolean)
+    :return: if initial and optimize are True returns sorted list of optimization results, otherwise return two Parts
+             for information regarding g1 and g2
+    """
     # load data
     filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
@@ -192,9 +260,18 @@ def split(filename, initial=False, optimize=False):
         files.Item.create(filename=filename + ',1.' + ext)
         # return so we can manipulate
         return Part(filename + ',1', ext, q1, g1.shape[0], ','.join([str(x) for x in a1_elems])), \
-                Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
+               Part(filename + ',2', ext, q2, g2.shape[0], ','.join([str(x) for x in a2_elems]))
 
 def loadtxt(filename, save=True, stripe=True, blank=False):
+    """
+    Used to prep and convert text file of bitstrings to numpy compressed archive.
+
+    :param filename:
+    :param save: save results to numpy archive, else return matrix, default is True (boolean)
+    :param stripe: uh oh, this does nothing, woops
+    :param blank: remove blank objects (rows & cols)
+    :return: return matrix if not saving to archive
+    """
     a = []
     f = open(filename, 'r')
     fn = filename.split('.')[0]
@@ -212,6 +289,12 @@ def loadtxt(filename, save=True, stripe=True, blank=False):
         return b
 
 def remove_blanks(mat):
+    """
+    Remove blank objects (rows & cols) from matrix.
+
+    :param mat:
+    :return: return matrix with blank objects removed
+    """
     ids = []
     for idx, row in enumerate(mat):
         if not 1 in row:

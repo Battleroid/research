@@ -18,12 +18,25 @@ from research.files import File, Item, database as db
 from research import master
 
 class AlreadyProcessed(Exception):
+    """
+    Used to indicate that the group has already been processed.
+    """
     def __init__(self, message=None):
         if not message:
             self.message = 'Matrix already processed, cannot reprocess.'
         self.message = message
 
 def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimize=False):
+    """
+    Partitions the specified group given the appropriate shape and Q threshold, along with whether or not to check if
+    the threshold is greater than or greater than or equal to the set Q threshold.
+
+    :param idx: ID of group to partition
+    :param shape_threshold: shape threshold, default is 5
+    :param q_threshold: Q threshold, default is 0.0 (float)
+    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True (boolean)
+    :param optimize: whether or not to optimize groupings, default is False (boolean)
+    """
     try:
         parent = File.get(id=idx)
         # check processed
@@ -61,6 +74,13 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimi
         parent.save()
 
 def save_all(directory='results', leaves_only=True, summary=False):
+    """
+    Save the results of groupings.
+
+    :param directory: default is to save to 'results'
+    :param leaves_only: save only the leaves of the binary tree (boolean), default is True
+    :param summary: save a summary of the split information, default is False (boolean)
+    """
     if not os.path.exists(directory):
         os.mkdir(directory)
     if leaves_only:
@@ -98,16 +118,33 @@ def save_all(directory='results', leaves_only=True, summary=False):
         print 'Leafstring summary included!'
     print 'Finished'
 
-def partition_all(shape_threshold=5, q_threshold=0.0, optimize=False):
+def partition_all(shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimize=False):
+    """
+    Recursively partition groupings until no more groupings to be partitioned exist.
+
+    :param shape_threshold: shape threshold, default is 5
+    :param q_threshold: Q threshold, default is 0.0 (float)
+    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True (boolean)
+    :param optimize: whether or not to optimize groupings, default is False
+    :return: returns None on finish
+    """
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        [partition(z.id, shape_threshold, q_threshold, optimize) for z in File.select().where(File.processed == False).iterator()]
+        [partition(z.id, shape_threshold, q_threshold, gt_than_zero, optimize) for z in File.select().where(File.processed == False).iterator()]
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
-        return partition_all(shape_threshold, q_threshold, optimize)
+        return partition_all(shape_threshold, q_threshold, gt_than_zero, optimize)
     else:
         print 'Finished'
         return
 
 def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
+    """
+    Create summary of split information, including hypothetical splits and reasoning why the splits were denied.
+
+    :param filename:
+    :param Q_THRESHOLD:
+    :param SHAPE_THRESHOLD:
+    :param GT_THAN_ZERO:
+    """
     query = File.select().where(File.parent == None).iterator()
     with open(filename, 'w') as f:
         for idx, root in enumerate(query):
@@ -117,13 +154,25 @@ def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     print 'Finished'
 
 class Reason(object):
-    '''Contain the reasons why, probably unnecessary. Please come back and fix someday.'''
+    """
+    Used in node_summary as proxy to display reasons why node was not split.
+    """
     def __init__(self):
         self.parent = []
         self.g1 = []
         self.g2 = []
 
 def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
+    """
+    Creates summary for a particular node, both describing the node itself as well as listing reasons why it was not
+    split.
+
+    :param node: Peewee record from File database
+    :param f: summary text file to append to
+    :param Q_THRESHOLD:
+    :param SHAPE_THRESHOLD:
+    :param GT_THAN_ZERO:
+    """
     # create primitive string for indent to show structure
     indent = get_indent(node) * 2
     ind_str = ''
@@ -191,12 +240,24 @@ def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
             node_summary(child, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO)
 
 def get_indent(node, level=0):
+    """
+    Helper for node_summary to create indent level.
+
+    :param node: Peewee record from File model
+    :param level: current level
+    :return: returns level or recursively runs until no parents are available
+    """
     if node.parent:
         level += 1
         return get_indent(node.parent, level)
     return level
 
 def view(idx):
+    """
+    View a particular groupings information.
+
+    :param idx: ID of File record to view
+    """
     try:
         idx = int(idx)
         target = File.get(id=idx)
@@ -211,6 +272,9 @@ def view(idx):
         print 'No parent could be found (possible that this is the master split).'
 
 def burn():
+    """
+    Removes and destroys all files in Item records, then removes database.
+    """
     file_list = Item.select().iterator()
     if not file_list:
         print 'Database empty, skipping.'
@@ -235,6 +299,11 @@ def reset_database():
     create_table()
 
 def check_database():
+    """
+    Check if database contains File table.
+
+    :return: True on exists, else False
+    """
     if not File.table_exists():
         create_table()
         return True
@@ -242,6 +311,11 @@ def check_database():
         return False
 
 def menu(leaves_only=False):
+    """
+    Creates listing of records in database.
+
+    :param leaves_only: show leaves only, default is False
+    """
     if leaves_only:
         query = File.select().where(File.leaf == True)
     else:
