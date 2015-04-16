@@ -32,10 +32,16 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimi
     the threshold is greater than or greater than or equal to the set Q threshold.
 
     :param idx: ID of group to partition
+    :type idx: int
     :param shape_threshold: shape threshold, default is 5
-    :param q_threshold: Q threshold, default is 0.0 (float)
-    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True (boolean)
-    :param optimize: whether or not to optimize groupings, default is False (boolean)
+    :type shape_threshold: int
+    :param q_threshold: Q threshold, default is 0.0
+    :type q_threshold: float
+    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True 
+    :type gt_than_zero: bool
+    :param optimize: whether or not to optimize groupings, default is False
+    :type optimize: bool
+    :raises: :py:exc:`AlreadyProcessed`, :py:exc:`CannotSplit <research.master.CannotSplit>`, :py:exc:`DoesNotExist`
     """
     try:
         parent = File.get(id=idx)
@@ -75,11 +81,16 @@ def partition(idx, shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimi
 
 def save_all(directory='results', leaves_only=True, summary=False):
     """
-    Save the results of groupings.
+    Save the results of groupings to a series of text files.
+
+    .. note:: Directory will be created if it does not exist.
 
     :param directory: default is to save to 'results'
-    :param leaves_only: save only the leaves of the binary tree (boolean), default is True
-    :param summary: save a summary of the split information, default is False (boolean)
+    :type directory: str
+    :param leaves_only: save only the leaves of the binary tree, default is True
+    :param leaves_only: bool
+    :param summary: save a summary of the split information, default is False
+    :type summary: bool
     """
     if not os.path.exists(directory):
         os.mkdir(directory)
@@ -123,10 +134,15 @@ def partition_all(shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimiz
     Recursively partition groupings until no more groupings to be partitioned exist.
 
     :param shape_threshold: shape threshold, default is 5
-    :param q_threshold: Q threshold, default is 0.0 (float)
-    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True (boolean)
+    :type shape_threshold: int
+    :param q_threshold: Q threshold, default is 0.0
+    :type q_threshold: float
+    :param gt_than_zero: greater than Q or greater than or equal to Q, default is True
+    :type gt_than_zero: bool
     :param optimize: whether or not to optimize groupings, default is False
+    :type optimize: bool
     :return: returns None on finish
+    :rtype: NoneType
     """
     if [x.processed for x in File.select().where(File.processed == False).iterator()]:
         [partition(z.id, shape_threshold, q_threshold, gt_than_zero, optimize) for z in File.select().where(File.processed == False).iterator()]
@@ -138,12 +154,16 @@ def partition_all(shape_threshold=5, q_threshold=0.0, gt_than_zero=True, optimiz
 
 def tree_summary(filename, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     """
-    Create summary of split information, including hypothetical splits and reasoning why the splits were denied.
+    Create a summary of split information, including hypothetical splits and reasoning why the splits were denied.
 
     :param filename:
+    :type filename: str
     :param Q_THRESHOLD:
+    :type Q_THRESHOLD: float
     :param SHAPE_THRESHOLD:
+    :type SHAPE_THRESHOLD: int
     :param GT_THAN_ZERO:
+    :type GT_THAN_ZERO: bool
     """
     query = File.select().where(File.parent == None).iterator()
     with open(filename, 'w') as f:
@@ -168,10 +188,15 @@ def node_summary(node, f, Q_THRESHOLD, SHAPE_THRESHOLD, GT_THAN_ZERO):
     split.
 
     :param node: Peewee record from File database
+    :type node: :py:class:`File <research.files.File>`
     :param f: summary text file to append to
+    :type f: file
     :param Q_THRESHOLD:
+    :type Q_THRESHOLD: float
     :param SHAPE_THRESHOLD:
+    :type SHAPE_THRESHOLD: int
     :param GT_THAN_ZERO:
+    :type GT_THAN_ZERO: bool
     """
     # create primitive string for indent to show structure
     indent = get_indent(node) * 2
@@ -244,8 +269,11 @@ def get_indent(node, level=0):
     Helper for node_summary to create indent level.
 
     :param node: Peewee record from File model
+    :type node: :py:class:`File <research.files.File>`
     :param level: current level
+    :type level: int
     :return: returns level or recursively runs until no parents are available
+    :rtype: [int | :py:func:`get_indent`]
     """
     if node.parent:
         level += 1
@@ -256,7 +284,11 @@ def view(idx):
     """
     View a particular groupings information.
 
+    .. note:: If specified node has a parent a prompt will be presented asking if you would like to view that node's parent.
+
     :param idx: ID of File record to view
+    :type idx: int
+    :raises: :py:exc:`DoesNotExist`, :py:exc:`AttributeError`
     """
     try:
         idx = int(idx)
@@ -274,6 +306,8 @@ def view(idx):
 def burn():
     """
     Removes and destroys all files in Item records, then removes database.
+
+    .. warning:: Will remove all files and reset the database.
     """
     file_list = Item.select().iterator()
     if not file_list:
@@ -300,7 +334,7 @@ def reset_database():
 
 def check_database():
     """
-    Check if database contains File table.
+    Check if database contains :py:class:`File <research.files.File>` model.
 
     :return: True on exists, else False
     """
@@ -315,6 +349,7 @@ def menu(leaves_only=False):
     Creates listing of records in database.
 
     :param leaves_only: show leaves only, default is False
+    :type leaves_only: bool
     """
     if leaves_only:
         query = File.select().where(File.leaf == True)
@@ -355,6 +390,11 @@ class Manager(Cmd):
         print 'Optimize is now toggled %s.' % ('off' if not self.OPTIMIZE else 'on')
 
     def do_tree_summary(self, line):
+        """
+        Performs :py:func:`tree_summary`.
+
+        :param filename: filename to save as
+        """
         if not File.select().count():
             print 'Database empty, nothing to summarize.'
             return
@@ -370,15 +410,20 @@ class Manager(Cmd):
 indentation and info on the record.'
 
     def _set_numpy(self, val):
+        """Sets numpy threshold to value."""
         np.set_printoptions(threshold=val)
 
     def _set_numpy_lw(self, val):
+        """Sets numpy linewidth to value."""
         np.set_printoptions(linewidth=val)
 
     def help_show_settings(self):
         print 'Show all settings and their current values.'
 
     def do_show_settings(self, line):
+        """
+        Display settings in table format as human readable.
+        """
         table = Texttable()
         headers = ['Setting', 'Value']
         rows = [
@@ -405,6 +450,12 @@ Use toggle_leaves to toggle saving only the leaves of the tree. Use \
 of the leafstrings should be written.'
 
     def do_save_all(self, line):
+        """
+        Saves all files using :py:func:`save_all`. Will not attempt if database is empty.
+
+        :param directory: directory to save results to, default is 'results'
+        :param summarize: flag to save tree summary along with results, write 'summarize' to use, default is False
+        """
         if not File.select().count():
             print 'Database empty, nothing to save, returning.'
             return
@@ -510,6 +561,12 @@ of the leafstrings should be written.'
 to remove empty (zero only) rows/cols from matrix before saving. Sample usage: file.txt [blank].'
 
     def do_convert_text(self, line):
+        """
+        Uses :py:func:`loadtxt <research.master.loadtxt>` to textfile filled with bitstrings to workable format.
+
+        :param filename: filename to convert
+        :param blank: whether or not to remove 'blank' objects, write 'blank' to use, default is False
+        """
         line = line.split()
         if not line:
             print 'Missing arguments.'
@@ -537,6 +594,11 @@ to remove empty (zero only) rows/cols from matrix before saving. Sample usage: f
 use \'yes\' to do initial split. Sample usage: file.npz [yes].'
 
     def do_load(self, line):
+        """
+        Load and perform initial split of data using :py:func:`split <research.master.split>`.
+
+        finish me pls
+        """
         line = line.split()
         if not line:
             print 'Missing arguments.'

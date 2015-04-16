@@ -8,6 +8,9 @@ class Base(Model):
         database = database
 
 class File(Base):
+    """
+    File model is used to keep track of grouping information as well as the binary tree order.
+    """
     id = PrimaryKeyField()
     parent = ForeignKeyField('self', null=True, related_name='children')
     filename = CharField(unique=True, null=False)
@@ -19,4 +22,7 @@ class File(Base):
     leaf = BooleanField(default=False)
 
 class Item(Base):
+    """
+    Item model is used only to keep track of all files created during session. Used with :py:func:`manager.burn` to remove all files.
+    """
     filename = CharField(unique=True, null=False)

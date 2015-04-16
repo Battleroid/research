@@ -1,0 +1,474 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>research module &mdash; Research 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Research 1.3 documentation" href="index.html" />
+    <link rel="prev" title="manager script" href="manager.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="manager.html" title="manager script"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Research 1.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="research-module">
+<h1>research module<a class="headerlink" href="#research-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-research.files">
+<span id="files-submodule"></span><h2>Files submodule<a class="headerlink" href="#module-research.files" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="research.files.Base">
+<em class="property">class </em><code class="descclassname">research.files.</code><code class="descname">Base</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#research.files.Base" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="research.files.Base.DoesNotExist">
+<code class="descname">DoesNotExist</code><a class="headerlink" href="#research.files.Base.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">BaseDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.Base.id">
+<code class="descname">id</code><em class="property"> = &lt;peewee.PrimaryKeyField object&gt;</em><a class="headerlink" href="#research.files.Base.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="research.files.File">
+<em class="property">class </em><code class="descclassname">research.files.</code><code class="descname">File</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#research.files.File" title="Permalink to this definition">¶</a></dt>
+<dd><p>File model is used to keep track of grouping information as well as the binary tree order.</p>
+<dl class="attribute">
+<dt id="research.files.File.DoesNotExist">
+<code class="descname">DoesNotExist</code><a class="headerlink" href="#research.files.File.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">FileDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.a_elems">
+<code class="descname">a_elems</code><em class="property"> = &lt;peewee.TextField object&gt;</em><a class="headerlink" href="#research.files.File.a_elems" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.children">
+<code class="descname">children</code><a class="headerlink" href="#research.files.File.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Back-reference to expose related objects as a <cite>SelectQuery</cite>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.ext">
+<code class="descname">ext</code><em class="property"> = &lt;peewee.CharField object&gt;</em><a class="headerlink" href="#research.files.File.ext" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.filename">
+<code class="descname">filename</code><em class="property"> = &lt;peewee.CharField object&gt;</em><a class="headerlink" href="#research.files.File.filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.id">
+<code class="descname">id</code><em class="property"> = &lt;peewee.PrimaryKeyField object&gt;</em><a class="headerlink" href="#research.files.File.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.leaf">
+<code class="descname">leaf</code><em class="property"> = &lt;peewee.BooleanField object&gt;</em><a class="headerlink" href="#research.files.File.leaf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.parent">
+<code class="descname">parent</code><em class="property"> = &lt;peewee.ForeignKeyField object&gt;</em><a class="headerlink" href="#research.files.File.parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.processed">
+<code class="descname">processed</code><em class="property"> = &lt;peewee.BooleanField object&gt;</em><a class="headerlink" href="#research.files.File.processed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.q">
+<code class="descname">q</code><em class="property"> = &lt;peewee.DoubleField object&gt;</em><a class="headerlink" href="#research.files.File.q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.File.shape">
+<code class="descname">shape</code><em class="property"> = &lt;peewee.IntegerField object&gt;</em><a class="headerlink" href="#research.files.File.shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="research.files.Item">
+<em class="property">class </em><code class="descclassname">research.files.</code><code class="descname">Item</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#research.files.Item" title="Permalink to this definition">¶</a></dt>
+<dd><p>Item model is used only to keep track of all files created during session. Used with <a class="reference internal" href="manager.html#manager.burn" title="manager.burn"><code class="xref py py-func docutils literal"><span class="pre">manager.burn()</span></code></a> to remove all files.</p>
+<dl class="attribute">
+<dt id="research.files.Item.DoesNotExist">
+<code class="descname">DoesNotExist</code><a class="headerlink" href="#research.files.Item.DoesNotExist" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">ItemDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.Item.filename">
+<code class="descname">filename</code><em class="property"> = &lt;peewee.CharField object&gt;</em><a class="headerlink" href="#research.files.Item.filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="research.files.Item.id">
+<code class="descname">id</code><em class="property"> = &lt;peewee.PrimaryKeyField object&gt;</em><a class="headerlink" href="#research.files.Item.id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-research.master">
+<span id="master-submodule"></span><h2>Master submodule<a class="headerlink" href="#module-research.master" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="research.master.CannotSplit">
+<em class="property">exception </em><code class="descclassname">research.master.</code><code class="descname">CannotSplit</code><span class="sig-paren">(</span><em>message=None</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.CannotSplit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to indicate you cannot split the matrix due to size constraints.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="research.master.Part">
+<em class="property">class </em><code class="descclassname">research.master.</code><code class="descname">Part</code><span class="sig-paren">(</span><em>filename</em>, <em>ext</em>, <em>q</em>, <em>shape</em>, <em>a_elems</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.Part" title="Permalink to this definition">¶</a></dt>
+<dd><p>Object used as proxy to pass named information to manager.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_b_of_g">
+<code class="descclassname">research.master.</code><code class="descname">create_b_of_g</code><span class="sig-paren">(</span><em>b</em>, <em>order</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_b_of_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new B of a grouping.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>b</strong> (<em>numpy.array</em>) &#8211; B from parent matrix</li>
+<li><strong>order</strong> (<em>list of int</em>) &#8211; ordering of elements from grouping</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">returns B matrix for grouping</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_g">
+<code class="descclassname">research.master.</code><code class="descname">create_g</code><span class="sig-paren">(</span><em>a</em>, <em>evec</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_g" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort elements and corresponding rows to g1 or g2 based on whether or not the first eigenvector of the row is
+positive or negative.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<em>numpy.array</em>) &#8211; parent matrix</li>
+<li><strong>evec</strong> (<em>numpy.array</em>) &#8211; set of eigenvectors for matrix a</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">both sets of order and arrays (g1, g2)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of int, list of int, list of int, list of int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_g_matrix">
+<code class="descclassname">research.master.</code><code class="descname">create_g_matrix</code><span class="sig-paren">(</span><em>order</em>, <em>arrays</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_g_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a set of element numbers and rows, build a new group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order</strong> (<em>list</em>) &#8211; row elements</li>
+<li><strong>arrays</strong> (<em>list</em>) &#8211; rows for elements</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">returns new matrix G assembled from order and arrays</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_p">
+<code class="descclassname">research.master.</code><code class="descname">create_p</code><span class="sig-paren">(</span><em>p1</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_p" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates intermediate step p from p1 and m.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p1</strong> (<em>numpy.array</em>) &#8211; </li>
+<li><strong>m</strong> (<em>numpy.array</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">return matrix p</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_p1">
+<code class="descclassname">research.master.</code><code class="descname">create_p1</code><span class="sig-paren">(</span><em>shape</em>, <em>ki</em>, <em>kj</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_p1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates intermediate step p1 using information from parent group.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape</strong> (<em>int</em>) &#8211; </li>
+<li><strong>ki</strong> (<em>int</em>) &#8211; </li>
+<li><strong>kj</strong> (<em>int</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">returns matrix p1</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.create_q">
+<code class="descclassname">research.master.</code><code class="descname">create_q</code><span class="sig-paren">(</span><em>size</em>, <em>b</em>, <em>order</em>, <em>m</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.create_q" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve Q value from given order of elements and information from parent matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>size</strong> (<em>int</em>) &#8211; size from parent matrix</li>
+<li><strong>b</strong> (<em>numpy.array</em>) &#8211; B matrix from parent matrix</li>
+<li><strong>order</strong> (<em>list of int</em>) &#8211; order of elements from grouping (g1, g2)</li>
+<li><strong>m</strong> (<em>numpy.array</em>) &#8211; m from parent matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">first element of resulting matrix which is our Q value</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.loadtxt">
+<code class="descclassname">research.master.</code><code class="descname">loadtxt</code><span class="sig-paren">(</span><em>filename</em>, <em>save=True</em>, <em>stripe=True</em>, <em>blank=False</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.loadtxt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to prep and convert text file of bitstrings to numpy compressed archive.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; </li>
+<li><strong>save</strong> (<em>bool</em>) &#8211; save results to numpy archive, else return matrix, default is True</li>
+<li><strong>stripe</strong> (<em>bool</em>) &#8211; uh oh, this does nothing, woops</li>
+<li><strong>blank</strong> (<em>bool</em>) &#8211; remove blank objects (rows &amp; cols)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">return matrix if not saving to archive</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.remove_blanks">
+<code class="descclassname">research.master.</code><code class="descname">remove_blanks</code><span class="sig-paren">(</span><em>mat</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.remove_blanks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove blank objects (rows &amp; cols) from matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>mat</strong> (<em>numpy.array</em>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">return matrix with blank objects removed</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.split">
+<code class="descclassname">research.master.</code><code class="descname">split</code><span class="sig-paren">(</span><em>filename</em>, <em>initial=False</em>, <em>optimize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Split the parent matrix into two separate groupings. Can be used for the initial split (master matrix) or subsequent
+groupings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; </li>
+<li><strong>initial</strong> (<em>bool</em>) &#8211; True to perform duties for initial split, default is False</li>
+<li><strong>optimize</strong> (<em>bool</em>) &#8211; (currently) gather information on optimization results, default is True</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">if initial and optimize are True returns sorted list of optimization results, otherwise return two Parts
+for information regarding g1 and g2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[list of tuples (int, float, float) | <a class="reference internal" href="#research.master.Part" title="research.master.Part"><code class="xref py py-class docutils literal"><span class="pre">Part</span></code></a>, <a class="reference internal" href="#research.master.Part" title="research.master.Part"><code class="xref py py-class docutils literal"><span class="pre">Part</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="research.master.temp_split">
+<code class="descclassname">research.master.</code><code class="descname">temp_split</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="headerlink" href="#research.master.temp_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits information on a temporary basis for debugging. Used for node/tree summary. Does not perform checks present
+in normal split method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns two Part objects containing information for debugging</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#research.master.Part" title="research.master.Part"><code class="xref py py-class docutils literal"><span class="pre">Part</span></code></a>, <a class="reference internal" href="#research.master.Part" title="research.master.Part"><code class="xref py py-class docutils literal"><span class="pre">Part</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">research module</a><ul>
+<li><a class="reference internal" href="#module-research.files">Files submodule</a></li>
+<li><a class="reference internal" href="#module-research.master">Master submodule</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="manager.html"
+                        title="previous chapter">manager script</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/research.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Casey Weed.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/research.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

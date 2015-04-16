@@ -1,0 +1,686 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>manager script &mdash; Research 1.3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Research 1.3 documentation" href="index.html" />
+    <link rel="next" title="research module" href="research.html" />
+    <link rel="prev" title="Welcome to Research’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="research.html" title="research module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Research’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Research 1.3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="manager-script">
+<h1>manager script<a class="headerlink" href="#manager-script" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-manager">
+<span id="manager-functions"></span><h2>Manager Functions<a class="headerlink" href="#module-manager" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="manager.AlreadyProcessed">
+<em class="property">exception </em><code class="descclassname">manager.</code><code class="descname">AlreadyProcessed</code><span class="sig-paren">(</span><em>message=None</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.AlreadyProcessed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to indicate that the group has already been processed.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="manager.Reason">
+<em class="property">class </em><code class="descclassname">manager.</code><code class="descname">Reason</code><a class="headerlink" href="#manager.Reason" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used in node_summary as proxy to display reasons why node was not split.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.burn">
+<code class="descclassname">manager.</code><code class="descname">burn</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.burn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes and destroys all files in Item records, then removes database.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Will remove all files and reset the database.</p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.check_database">
+<code class="descclassname">manager.</code><code class="descname">check_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.check_database" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if database contains <a class="reference internal" href="research.html#research.files.File" title="research.files.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a> model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">True on exists, else False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.create_table">
+<code class="descclassname">manager.</code><code class="descname">create_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.create_table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="manager.drop_tables">
+<code class="descclassname">manager.</code><code class="descname">drop_tables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.drop_tables" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="manager.get_indent">
+<code class="descclassname">manager.</code><code class="descname">get_indent</code><span class="sig-paren">(</span><em>node</em>, <em>level=0</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.get_indent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper for node_summary to create indent level.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="research.html#research.files.File" title="research.files.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a>) &#8211; Peewee record from File model</li>
+<li><strong>level</strong> (<em>int</em>) &#8211; current level</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">returns level or recursively runs until no parents are available</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">[int | <a class="reference internal" href="#manager.get_indent" title="manager.get_indent"><code class="xref py py-func docutils literal"><span class="pre">get_indent()</span></code></a>]</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.menu">
+<code class="descclassname">manager.</code><code class="descname">menu</code><span class="sig-paren">(</span><em>leaves_only=False</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.menu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates listing of records in database.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>leaves_only</strong> (<em>bool</em>) &#8211; show leaves only, default is False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.node_summary">
+<code class="descclassname">manager.</code><code class="descname">node_summary</code><span class="sig-paren">(</span><em>node</em>, <em>f</em>, <em>Q_THRESHOLD</em>, <em>SHAPE_THRESHOLD</em>, <em>GT_THAN_ZERO</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.node_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates summary for a particular node, both describing the node itself as well as listing reasons why it was not
+split.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>node</strong> (<a class="reference internal" href="research.html#research.files.File" title="research.files.File"><code class="xref py py-class docutils literal"><span class="pre">File</span></code></a>) &#8211; Peewee record from File database</li>
+<li><strong>f</strong> (<em>file</em>) &#8211; summary text file to append to</li>
+<li><strong>Q_THRESHOLD</strong> (<em>float</em>) &#8211; </li>
+<li><strong>SHAPE_THRESHOLD</strong> (<em>int</em>) &#8211; </li>
+<li><strong>GT_THAN_ZERO</strong> (<em>bool</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.partition">
+<code class="descclassname">manager.</code><code class="descname">partition</code><span class="sig-paren">(</span><em>idx</em>, <em>shape_threshold=5</em>, <em>q_threshold=0.0</em>, <em>gt_than_zero=True</em>, <em>optimize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.partition" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partitions the specified group given the appropriate shape and Q threshold, along with whether or not to check if
+the threshold is greater than or greater than or equal to the set Q threshold.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>idx</strong> (<em>int</em>) &#8211; ID of group to partition</li>
+<li><strong>shape_threshold</strong> (<em>int</em>) &#8211; shape threshold, default is 5</li>
+<li><strong>q_threshold</strong> (<em>float</em>) &#8211; Q threshold, default is 0.0</li>
+<li><strong>gt_than_zero</strong> (<em>bool</em>) &#8211; greater than Q or greater than or equal to Q, default is True</li>
+<li><strong>optimize</strong> (<em>bool</em>) &#8211; whether or not to optimize groupings, default is False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#manager.AlreadyProcessed" title="manager.AlreadyProcessed"><code class="xref py py-exc docutils literal"><span class="pre">AlreadyProcessed</span></code></a>, <a class="reference internal" href="research.html#research.master.CannotSplit" title="research.master.CannotSplit"><code class="xref py py-exc docutils literal"><span class="pre">CannotSplit</span></code></a>, <code class="xref py py-exc docutils literal"><span class="pre">DoesNotExist</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.partition_all">
+<code class="descclassname">manager.</code><code class="descname">partition_all</code><span class="sig-paren">(</span><em>shape_threshold=5</em>, <em>q_threshold=0.0</em>, <em>gt_than_zero=True</em>, <em>optimize=False</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.partition_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively partition groupings until no more groupings to be partitioned exist.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>shape_threshold</strong> (<em>int</em>) &#8211; shape threshold, default is 5</li>
+<li><strong>q_threshold</strong> (<em>float</em>) &#8211; Q threshold, default is 0.0</li>
+<li><strong>gt_than_zero</strong> (<em>bool</em>) &#8211; greater than Q or greater than or equal to Q, default is True</li>
+<li><strong>optimize</strong> (<em>bool</em>) &#8211; whether or not to optimize groupings, default is False</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">returns None on finish</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">NoneType</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.reset_database">
+<code class="descclassname">manager.</code><code class="descname">reset_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.reset_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="manager.save_all">
+<code class="descclassname">manager.</code><code class="descname">save_all</code><span class="sig-paren">(</span><em>directory='results'</em>, <em>leaves_only=True</em>, <em>summary=False</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.save_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the results of groupings to a series of text files.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Directory will be created if it does not exist.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>directory</strong> (<em>str</em>) &#8211; default is to save to &#8216;results&#8217;</li>
+<li><strong>leaves_only</strong> &#8211; save only the leaves of the binary tree, default is True</li>
+<li><strong>leaves_only</strong> &#8211; bool</li>
+<li><strong>summary</strong> (<em>bool</em>) &#8211; save a summary of the split information, default is False</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.tree_summary">
+<code class="descclassname">manager.</code><code class="descname">tree_summary</code><span class="sig-paren">(</span><em>filename</em>, <em>Q_THRESHOLD</em>, <em>SHAPE_THRESHOLD</em>, <em>GT_THAN_ZERO</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.tree_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a summary of split information, including hypothetical splits and reasoning why the splits were denied.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>str</em>) &#8211; </li>
+<li><strong>Q_THRESHOLD</strong> (<em>float</em>) &#8211; </li>
+<li><strong>SHAPE_THRESHOLD</strong> (<em>int</em>) &#8211; </li>
+<li><strong>GT_THAN_ZERO</strong> (<em>bool</em>) &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="manager.view">
+<code class="descclassname">manager.</code><code class="descname">view</code><span class="sig-paren">(</span><em>idx</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.view" title="Permalink to this definition">¶</a></dt>
+<dd><p>View a particular groupings information.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If specified node has a parent a prompt will be presented asking if you would like to view that node&#8217;s parent.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>idx</strong> (<em>int</em>) &#8211; ID of File record to view</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal"><span class="pre">DoesNotExist</span></code>, <code class="xref py py-exc docutils literal"><span class="pre">AttributeError</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="manager-cmd">
+<h2>Manager Cmd<a class="headerlink" href="#manager-cmd" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="manager.Manager">
+<em class="property">class </em><code class="descclassname">manager.</code><code class="descname">Manager</code><span class="sig-paren">(</span><em>completekey='tab'</em>, <em>stdin=None</em>, <em>stdout=None</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="manager.Manager.GT_THAN_ZERO">
+<code class="descname">GT_THAN_ZERO</code><em class="property"> = True</em><a class="headerlink" href="#manager.Manager.GT_THAN_ZERO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.NUMPY_LW">
+<code class="descname">NUMPY_LW</code><em class="property"> = 80</em><a class="headerlink" href="#manager.Manager.NUMPY_LW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.NUMPY_THRESHOLD">
+<code class="descname">NUMPY_THRESHOLD</code><em class="property"> = 80</em><a class="headerlink" href="#manager.Manager.NUMPY_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.OPTIMIZE">
+<code class="descname">OPTIMIZE</code><em class="property"> = False</em><a class="headerlink" href="#manager.Manager.OPTIMIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.Q_THRESHOLD">
+<code class="descname">Q_THRESHOLD</code><em class="property"> = 0</em><a class="headerlink" href="#manager.Manager.Q_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.SHAPE_THRESHOLD">
+<code class="descname">SHAPE_THRESHOLD</code><em class="property"> = 5</em><a class="headerlink" href="#manager.Manager.SHAPE_THRESHOLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.SHOW_MENU_AFTER_CMD">
+<code class="descname">SHOW_MENU_AFTER_CMD</code><em class="property"> = False</em><a class="headerlink" href="#manager.Manager.SHOW_MENU_AFTER_CMD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.VIEW_ONLY_LEAVES">
+<code class="descname">VIEW_ONLY_LEAVES</code><em class="property"> = False</em><a class="headerlink" href="#manager.Manager.VIEW_ONLY_LEAVES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager._set_numpy">
+<code class="descname">_set_numpy</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager._set_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets numpy threshold to value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager._set_numpy_lw">
+<code class="descname">_set_numpy_lw</code><span class="sig-paren">(</span><em>val</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager._set_numpy_lw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets numpy linewidth to value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.complete_convert_text">
+<code class="descname">complete_convert_text</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.complete_convert_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.complete_load">
+<code class="descname">complete_load</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.complete_load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.complete_view">
+<code class="descname">complete_view</code><span class="sig-paren">(</span><em>text</em>, <em>line</em>, <em>begidx</em>, <em>endidx</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.complete_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_EOF">
+<code class="descname">do_EOF</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_EOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_burn_database">
+<code class="descname">do_burn_database</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_burn_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_convert_text">
+<code class="descname">do_convert_text</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_convert_text" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses <a class="reference internal" href="research.html#research.master.loadtxt" title="research.master.loadtxt"><code class="xref py py-func docutils literal"><span class="pre">loadtxt</span></code></a> to textfile filled with bitstrings to workable format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> &#8211; filename to convert</li>
+<li><strong>blank</strong> &#8211; whether or not to remove &#8216;blank&#8217; objects, write &#8216;blank&#8217; to use, default is False</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_exit">
+<code class="descname">do_exit</code><span class="sig-paren">(</span><em>args</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_exit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_load">
+<code class="descname">do_load</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load and perform initial split of data using <a class="reference internal" href="research.html#research.master.split" title="research.master.split"><code class="xref py py-func docutils literal"><span class="pre">split</span></code></a>.</p>
+<p>finish me pls</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_menu">
+<code class="descname">do_menu</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_reset_database">
+<code class="descname">do_reset_database</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_reset_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_save_all">
+<code class="descname">do_save_all</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_save_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves all files using <a class="reference internal" href="#manager.save_all" title="manager.save_all"><code class="xref py py-func docutils literal"><span class="pre">save_all()</span></code></a>. Will not attempt if database is empty.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>directory</strong> &#8211; directory to save results to, default is &#8216;results&#8217;</li>
+<li><strong>summarize</strong> &#8211; flag to save tree summary along with results, write &#8216;summarize&#8217; to use, default is False</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_set_numpy">
+<code class="descname">do_set_numpy</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_set_numpy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_set_numpy_lw">
+<code class="descname">do_set_numpy_lw</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_set_numpy_lw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_set_q">
+<code class="descname">do_set_q</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_set_q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_set_shape">
+<code class="descname">do_set_shape</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_set_shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_show_settings">
+<code class="descname">do_show_settings</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_show_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display settings in table format as human readable.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_split">
+<code class="descname">do_split</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_split_all">
+<code class="descname">do_split_all</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_split_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_toggle_gt">
+<code class="descname">do_toggle_gt</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_toggle_gt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_toggle_leaves">
+<code class="descname">do_toggle_leaves</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_toggle_leaves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_toggle_menu">
+<code class="descname">do_toggle_menu</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_toggle_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_toggle_optimize">
+<code class="descname">do_toggle_optimize</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_toggle_optimize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_tree_summary">
+<code class="descname">do_tree_summary</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_tree_summary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs <a class="reference internal" href="#manager.tree_summary" title="manager.tree_summary"><code class="xref py py-func docutils literal"><span class="pre">tree_summary()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> &#8211; filename to save as</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.do_view">
+<code class="descname">do_view</code><span class="sig-paren">(</span><em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.do_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_burn_database">
+<code class="descname">help_burn_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_burn_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_convert_text">
+<code class="descname">help_convert_text</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_convert_text" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_load">
+<code class="descname">help_load</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_menu">
+<code class="descname">help_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_reset_database">
+<code class="descname">help_reset_database</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_reset_database" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_save_all">
+<code class="descname">help_save_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_save_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_set_numpy">
+<code class="descname">help_set_numpy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_set_numpy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_set_numpy_lw">
+<code class="descname">help_set_numpy_lw</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_set_numpy_lw" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_set_q">
+<code class="descname">help_set_q</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_set_q" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_set_shape">
+<code class="descname">help_set_shape</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_set_shape" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_show_settings">
+<code class="descname">help_show_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_show_settings" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_split">
+<code class="descname">help_split</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_split" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_split_all">
+<code class="descname">help_split_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_split_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_toggle_gt">
+<code class="descname">help_toggle_gt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_toggle_gt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_toggle_leaves">
+<code class="descname">help_toggle_leaves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_toggle_leaves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_toggle_menu">
+<code class="descname">help_toggle_menu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_toggle_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_toggle_optimize">
+<code class="descname">help_toggle_optimize</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_toggle_optimize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_tree_summary">
+<code class="descname">help_tree_summary</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_tree_summary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.help_view">
+<code class="descname">help_view</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.help_view" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.postcmd">
+<code class="descname">postcmd</code><span class="sig-paren">(</span><em>stop</em>, <em>line</em><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.postcmd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="manager.Manager.preloop">
+<code class="descname">preloop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#manager.Manager.preloop" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.prompt">
+<code class="descname">prompt</code><em class="property"> = 'Manager&gt; '</em><a class="headerlink" href="#manager.Manager.prompt" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="manager.Manager.ruler">
+<code class="descname">ruler</code><em class="property"> = '-'</em><a class="headerlink" href="#manager.Manager.ruler" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">manager script</a><ul>
+<li><a class="reference internal" href="#module-manager">Manager Functions</a></li>
+<li><a class="reference internal" href="#manager-cmd">Manager Cmd</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to Research&#8217;s documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="research.html"
+                        title="next chapter">research module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/manager.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, Casey Weed.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.3</a>
+      
+      |
+      <a href="_sources/manager.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

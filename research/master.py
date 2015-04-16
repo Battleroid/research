@@ -28,9 +28,13 @@ def create_p1(shape, ki, kj):
     Creates intermediate step p1 using information from parent group.
 
     :param shape:
+    :type shape: int
     :param ki:
+    :type ki: int
     :param kj:
+    :type kj: int
     :return: returns matrix p1
+    :rtype: numpy.array
     """
     a = np.zeros(shape, dtype=np.int)
     for i, row in enumerate(a):
@@ -40,11 +44,14 @@ def create_p1(shape, ki, kj):
 
 def create_p(p1, m):
     """
-    Creates intermediate step p.
+    Creates intermediate step p from p1 and m.
 
     :param p1:
+    :type p1: numpy.array
     :param m:
+    :type m: numpy.array
     :return: return matrix p
+    :rtype: numpy.array
     """
     shape = p1.shape
     a = np.zeros(shape, dtype=np.float64)
@@ -62,8 +69,11 @@ def create_g(a, evec):
     positive or negative.
 
     :param a: parent matrix
+    :type a: numpy.array
     :param evec: set of eigenvectors for matrix a
+    :type evec: numpy.array
     :return: both sets of order and arrays (g1, g2)
+    :rtype: list of int, list of int, list of int, list of int
     """
     g1_order, g2_order = [], []
     g1_arrays, g2_arrays = [], []
@@ -81,8 +91,11 @@ def create_g_matrix(order, arrays):
     Given a set of element numbers and rows, build a new group.
 
     :param order: row elements
+    :type order: list
     :param arrays: rows for elements
+    :type arrays: list
     :return: returns new matrix G assembled from order and arrays
+    :rtype: numpy.array
     """
     size = len(order)
     g = np.zeros((size, size), dtype=np.int)
@@ -96,10 +109,15 @@ def create_q(size, b, order, m):
     Retrieve Q value from given order of elements and information from parent matrix.
 
     :param size: size from parent matrix
+    :type size: int
     :param b: B matrix from parent matrix
+    :type b: numpy.array
     :param order: order of elements from grouping (g1, g2)
+    :type order: list of int
     :param m: m from parent matrix
+    :type m: numpy.array
     :return: first element of resulting matrix which is our Q value
+    :rtype: float
     """
     s = np.matrix(np.zeros(size))
     for i in order:
@@ -113,8 +131,11 @@ def create_b_of_g(b, order):
     Create new B of a grouping.
 
     :param b: B from parent matrix
+    :type b: numpy.array
     :param order: ordering of elements from grouping
+    :type order: list of int
     :return: returns B matrix for grouping
+    :rtype: numpy.array
     """
     n_b = np.zeros((len(order), len(order)))
     for i, row in enumerate(n_b):
@@ -133,7 +154,9 @@ def temp_split(filename):
     in normal split method.
 
     :param filename:
+    :type filename: str
     :return: returns two Part objects containing information for debugging
+    :rtype: :py:class:`Part`, :py:class:`Part`
     """
     filename, ext = filename.rsplit('.')
     data = np.load(filename + "." + ext)
@@ -173,10 +196,14 @@ def split(filename, initial=False, optimize=False):
     groupings.
 
     :param filename:
-    :param initial: True to perform duties for initial split, default is False (boolean)
-    :param optimize: (currently) gather information on optimization results, default is True (boolean)
+    :type filename: str
+    :param initial: True to perform duties for initial split, default is False
+    :type initial: bool
+    :param optimize: (currently) gather information on optimization results, default is True
+    :type optimize: bool
     :return: if initial and optimize are True returns sorted list of optimization results, otherwise return two Parts
              for information regarding g1 and g2
+    :rtype: [list of tuples (int, float, float) | :py:class:`Part`, :py:class:`Part`]
     """
     # load data
     filename, ext = filename.rsplit('.')
@@ -267,10 +294,15 @@ def loadtxt(filename, save=True, stripe=True, blank=False):
     Used to prep and convert text file of bitstrings to numpy compressed archive.
 
     :param filename:
-    :param save: save results to numpy archive, else return matrix, default is True (boolean)
+    :type filename: str
+    :param save: save results to numpy archive, else return matrix, default is True
+    :type save: bool
     :param stripe: uh oh, this does nothing, woops
+    :type stripe: bool
     :param blank: remove blank objects (rows & cols)
+    :type blank: bool
     :return: return matrix if not saving to archive
+    :rtype: numpy.array
     """
     a = []
     f = open(filename, 'r')
@@ -293,7 +325,9 @@ def remove_blanks(mat):
     Remove blank objects (rows & cols) from matrix.
 
     :param mat:
+    :type mat: numpy.array
     :return: return matrix with blank objects removed
+    :rtype: numpy.array
     """
     ids = []
     for idx, row in enumerate(mat):
